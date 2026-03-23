@@ -47,6 +47,53 @@ extension/
 
 Note: `<all_urls>` host permission is broad but necessary. The extension needs to download images from any website the user visits. No data is collected or sent anywhere.
 
+## Release & Publishing
+
+### Creating a Release
+
+1. Update version in `extension/manifest.json`
+2. Commit the change
+3. Create and push a git tag:
+
+```bash
+git tag v1.0.1
+git push && git push --tags
+```
+
+GitHub Actions will automatically build a ZIP and create a GitHub Release.
+
+### Publishing to Stores
+
+Download the ZIP from GitHub Releases and upload to each store:
+
+| Store | Dashboard | Cost |
+|---|---|---|
+| Chrome Web Store | [CWS Developer Dashboard](https://chrome.google.com/webstore/devconsole) | $5 one-time |
+| Edge Add-ons | [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview) | Free |
+| Opera Add-ons | [Opera Developer](https://addons.opera.com/developer/) | Free |
+
+The same ZIP works for all three stores (Manifest V3 compatible).
+
+### Versioning
+
+- Version lives in `extension/manifest.json` (`"version"` field)
+- Git tags must match: tag `v1.0.1` requires manifest version `1.0.1`
+- CI verifies the match and fails if they differ
+
 ## Store Listing
 
 See `store/` directory for Chrome Web Store description and asset requirements.
+
+## Localization
+
+Store listing (name + description) is localized in `extension/_locales/`:
+
+| Language | Code |
+|---|---|
+| English | `en` |
+| Spanish | `es` |
+| Portuguese (Brazil) | `pt_BR` |
+| German | `de` |
+| French | `fr` |
+| Japanese | `ja` |
+| Russian | `ru` |
