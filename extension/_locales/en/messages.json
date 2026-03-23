@@ -1,10 +1,10 @@
 {
   "extName": {
-    "message": "Save Image As Type",
+    "message": "Save Image As PNG, JPG, WebP, AVIF — Image Converter",
     "description": "Extension name"
   },
   "extDescription": {
-    "message": "Right-click any image to save it as PNG, JPG, WebP, or AVIF. Fast client-side conversion, no uploads.",
+    "message": "Right-click any image to save as PNG, JPG, WebP, or AVIF. Fast client-side format converter. No uploads, 100% private.",
     "description": "Extension description for Chrome Web Store"
   }
 }

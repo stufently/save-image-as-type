@@ -1,8 +1,6 @@
 # Save Image As Type
 
-Chrome extension to save any image from the web as PNG, JPG, WebP, or AVIF.
-
-Replacement for the original "Save Image As Type" extension (1M+ users) that was removed from Chrome Web Store.
+Chrome extension to save any image from the web as PNG, JPG, WebP, or AVIF. Fast client-side conversion via Canvas API — no uploads, no servers, 100% private.
 
 ## Features
 
