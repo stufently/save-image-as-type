@@ -13,7 +13,9 @@
 - [ ] Privacy policy page (hosted URL for CWS listing)
 - [ ] Landing page with SEO for long-tail queries (save webp as jpg chrome, etc.)
 - [ ] Set homepage URL, support URL, privacy policy URL in CWS dashboard
-- [ ] Choose category: Photos (fallback: Productivity)
+- [ ] Choose category: Photos or Productivity
+- [x] Onboarding welcome page (opens on first install)
+- [x] Localization: es, pt-BR, de, fr, ja, ru
 
 ## After Publication
 
@@ -23,3 +25,5 @@
 - [ ] Product Hunt launch with demo GIF
 - [ ] YouTube Shorts — 15 sec demo: right-click → choose format
 - [ ] 2-3 updates in the first month (real fixes/improvements)
+- [ ] Cross-publish to Edge Add-ons and Opera Addons (free extra traffic)
+- [ ] Maintain update cadence: min 1x/month (avoid 6+ month gaps — CWS penalizes)

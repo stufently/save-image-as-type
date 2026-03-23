@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save Image As — Getting Started</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #4A90D9 0%, #357ABD 100%);
+      color: #fff;
+      text-align: center;
+      padding: 48px 24px 40px;
+    }
+
+    .hero h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 32px 24px 48px;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .step-number {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #4A90D9;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-content h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .step-content p {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .formats {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .format-badge {
+      background: #fff;
+      border: 2px solid #4A90D9;
+      border-radius: 8px;
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 100px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .format-badge .name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #4A90D9;
+    }
+
+    .format-badge .desc {
+      font-size: 11px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .privacy {
+      background: #e8f5e9;
+      border-radius: 12px;
+      padding: 20px 24px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .privacy h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2e7d32;
+      margin-bottom: 6px;
+    }
+
+    .privacy p {
+      font-size: 13px;
+      color: #555;
+    }
+
+    .tip {
+      background: #fff;
+      border-left: 4px solid #4A90D9;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .tip strong {
+      color: #333;
+    }
+
+    kbd {
+      background: #eee;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>Save Image As — Installed!</h1>
+    <p>Convert and save any image as PNG, JPG, WebP, or AVIF</p>
+  </div>
+
+  <div class="container">
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Right-click any image</h3>
+          <p>Find any image on a webpage and right-click it to open the context menu.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Select "Save Image As"</h3>
+          <p>Hover over "Save Image As" to see available formats.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Choose your format</h3>
+          <p>Pick PNG, JPG, WebP, or AVIF. The image is converted instantly in your browser and downloaded.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="formats">
+      <div class="format-badge">
+        <div class="name">PNG</div>
+        <div class="desc">Lossless</div>
+      </div>
+      <div class="format-badge">
+        <div class="name">JPG</div>
+        <div class="desc">Photos</div>
+      </div>
+      <div class="format-badge">
+        <div class="name">WebP</div>
+        <div class="desc">Modern</div>
+      </div>
+      <div class="format-badge">
+        <div class="name">AVIF</div>
+        <div class="desc">Smallest</div>
+      </div>
+    </div>
+
+    <div class="privacy">
+      <h3>100% Private</h3>
+      <p>All conversion happens locally in your browser. No images are uploaded to any server. No tracking, no analytics.</p>
+    </div>
+
+    <div class="tip">
+      <strong>Tip:</strong> Click the extension icon in the toolbar to adjust quality settings for JPG, WebP, and AVIF formats.
+    </div>
+  </div>
+</body>
+</html>

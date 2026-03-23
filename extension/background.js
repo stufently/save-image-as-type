@@ -17,7 +17,12 @@ const DEFAULT_SETTINGS = {
 
 // --- Context Menu Setup ---
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
+  // Show welcome page on first install
+  if (details.reason === 'install') {
+    chrome.tabs.create({ url: 'welcome.html' });
+  }
+
   // Parent menu
   chrome.contextMenus.create({
     id: 'save-image-parent',
