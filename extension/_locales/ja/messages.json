@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "画像をPNG, JPG, WebP, AVIFで保存 — 画像変換ツール",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "画像を右クリックしてPNG、JPG、WebP、AVIFで保存。高速なローカル変換、アップロード不要、完全プライベート。",
+    "description": "Extension description for Chrome Web Store"
+  }
+}

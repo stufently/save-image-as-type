@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Guardar Imagen Como PNG, JPG, WebP, AVIF — Convertidor",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Clic derecho en cualquier imagen para guardarla como PNG, JPG, WebP o AVIF. Conversión local rápida, sin subir archivos.",
+    "description": "Extension description for Chrome Web Store"
+  }
+}
