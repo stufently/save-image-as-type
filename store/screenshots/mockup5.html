@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { width: 1280px; height: 800px; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #14532d; display: flex; align-items: center; justify-content: center; }
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 56px 64px;
+  max-width: 1050px;
+  display: flex;
+  gap: 56px;
+  align-items: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.left { flex: 1; }
+.left h1 { font-size: 38px; font-weight: 800; color: #14532d; line-height: 1.2; margin-bottom: 12px; }
+.left p { font-size: 17px; color: #64748b; line-height: 1.6; margin-bottom: 28px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.badge-icon { font-size: 20px; }
+
+.right { flex-shrink: 0; }
+
+.shield {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shield-item {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.shield-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #22c55e; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+
+.shield-text h3 { font-size: 14px; font-weight: 700; color: #166534; margin-bottom: 2px; }
+.shield-text p { font-size: 12px; color: #4ade80; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="left">
+      <h1>100% Private.<br>Zero Uploads.</h1>
+      <p>Your images never leave your computer. All conversion happens locally using your browser's Canvas API. No servers, no tracking, no analytics.</p>
+      <div class="badge"><span class="badge-icon">&#128274;</span> Open Source &amp; Transparent</div><br>
+      <div class="badge"><span class="badge-icon">&#9989;</span> Manifest V3 Compliant</div>
+    </div>
+    <div class="right">
+      <div class="shield">
+        <div class="shield-item">
+          <div class="shield-icon">&#128274;</div>
+          <div class="shield-text">
+            <h3>No Data Collection</h3>
+            <p>Zero analytics, zero cookies, zero tracking</p>
+          </div>
+        </div>
+        <div class="shield-item">
+          <div class="shield-icon">&#9940;</div>
+          <div class="shield-text">
+            <h3>No Server Uploads</h3>
+            <p>Images are converted locally in your browser</p>
+          </div>
+        </div>
+        <div class="shield-item">
+          <div class="shield-icon">&#128187;</div>
+          <div class="shield-text">
+            <h3>Client-Side Only</h3>
+            <p>Canvas API conversion, works offline</p>
+          </div>
+        </div>
+        <div class="shield-item">
+          <div class="shield-icon">&#128065;</div>
+          <div class="shield-text">
+            <h3>Open Source Code</h3>
+            <p>Inspect every line on GitHub</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

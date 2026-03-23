@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { width: 1280px; height: 800px; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1e293b; display: flex; align-items: center; justify-content: center; }
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 56px 64px;
+  max-width: 1100px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+h1 { font-size: 40px; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+.sub { font-size: 18px; color: #64748b; margin-bottom: 40px; }
+
+.formats {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+.format-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 28px 24px;
+  width: 220px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.format-card.featured {
+  border-color: #4A90D9;
+  background: #eff6ff;
+}
+
+.format-name {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.format-card:nth-child(1) .format-name { color: #16a34a; }
+.format-card:nth-child(2) .format-name { color: #ea580c; }
+.format-card:nth-child(3) .format-name { color: #4A90D9; }
+.format-card:nth-child(4) .format-name { color: #9333ea; }
+
+.format-type { font-size: 13px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+.format-desc { font-size: 14px; color: #64748b; line-height: 1.5; }
+
+.format-best {
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.format-card:nth-child(1) .format-best { background: #16a34a; }
+.format-card:nth-child(2) .format-best { background: #ea580c; }
+.format-card:nth-child(3) .format-best { background: #4A90D9; }
+.format-card:nth-child(4) .format-best { background: #9333ea; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Choose the Right Format</h1>
+    <div class="sub">Every format has its strength. Pick what fits your needs.</div>
+    <div class="formats">
+      <div class="format-card">
+        <div class="format-name">PNG</div>
+        <div class="format-type">Lossless</div>
+        <div class="format-desc">Perfect quality with transparency support</div>
+        <div class="format-best">Screenshots & Graphics</div>
+      </div>
+      <div class="format-card">
+        <div class="format-name">JPG</div>
+        <div class="format-type">Lossy</div>
+        <div class="format-desc">Smaller files with adjustable quality</div>
+        <div class="format-best">Photos & Images</div>
+      </div>
+      <div class="format-card featured">
+        <div class="format-name">WebP</div>
+        <div class="format-type">Modern</div>
+        <div class="format-desc">25-35% smaller than JPG at same quality</div>
+        <div class="format-best">Best Balance</div>
+      </div>
+      <div class="format-card">
+        <div class="format-name">AVIF</div>
+        <div class="format-type">Next-Gen</div>
+        <div class="format-desc">Maximum compression, smallest files</div>
+        <div class="format-best">Smallest Size</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

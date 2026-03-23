@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { width: 1280px; height: 800px; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; display: flex; align-items: center; justify-content: center; }
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 48px 56px;
+  max-width: 1100px;
+  display: flex;
+  gap: 56px;
+  align-items: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.left { flex: 1; }
+.left h1 { font-size: 36px; font-weight: 800; color: #0f172a; line-height: 1.2; margin-bottom: 12px; }
+.left p { font-size: 17px; color: #666; line-height: 1.5; margin-bottom: 24px; }
+
+.features { display: flex; flex-direction: column; gap: 14px; }
+.feature {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 15px; color: #444;
+}
+.check {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #22c55e; color: #fff; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; flex-shrink: 0;
+}
+
+.right { flex-shrink: 0; }
+
+.popup {
+  width: 320px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  padding: 20px 24px;
+}
+
+.popup h2 { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+.popup .subtitle { font-size: 12px; color: #888; margin-bottom: 18px; }
+
+.section { margin-bottom: 16px; }
+.section label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+
+select {
+  width: 100%; padding: 8px 10px; border: 1px solid #ddd;
+  border-radius: 6px; font-size: 13px; background: #fafafa;
+}
+
+.slider-row { display: flex; align-items: center; gap: 8px; }
+.slider {
+  flex: 1; height: 6px; background: #e0e0e0; border-radius: 3px;
+  position: relative; overflow: visible;
+}
+.slider-fill { height: 100%; background: #4A90D9; border-radius: 3px; }
+.slider-thumb {
+  width: 16px; height: 16px; border-radius: 50%; background: #4A90D9;
+  border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  position: absolute; top: -5px; right: -2px;
+}
+.slider-val { font-size: 13px; color: #4A90D9; font-weight: 700; min-width: 36px; text-align: right; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="left">
+      <h1>Quality You Control</h1>
+      <p>Fine-tune compression for each format. Your settings sync across devices.</p>
+      <div class="features">
+        <div class="feature"><div class="check">&#10003;</div> Adjustable quality for JPG, WebP, AVIF</div>
+        <div class="feature"><div class="check">&#10003;</div> PNG is always lossless</div>
+        <div class="feature"><div class="check">&#10003;</div> Settings sync across Chrome devices</div>
+        <div class="feature"><div class="check">&#10003;</div> Set your default format</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="popup">
+        <h2>Save Image As Type</h2>
+        <div class="subtitle">Right-click any image to save in your preferred format</div>
+
+        <div class="section">
+          <label>Default format</label>
+          <select><option>PNG (lossless, transparency)</option></select>
+        </div>
+
+        <div class="section">
+          <label>JPG quality</label>
+          <div class="slider-row">
+            <div class="slider"><div class="slider-fill" style="width:92%"><div class="slider-thumb"></div></div></div>
+            <div class="slider-val">92%</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <label>WebP quality</label>
+          <div class="slider-row">
+            <div class="slider"><div class="slider-fill" style="width:90%"><div class="slider-thumb"></div></div></div>
+            <div class="slider-val">90%</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <label>AVIF quality</label>
+          <div class="slider-row">
+            <div class="slider"><div class="slider-fill" style="width:80%"><div class="slider-thumb"></div></div></div>
+            <div class="slider-val">80%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

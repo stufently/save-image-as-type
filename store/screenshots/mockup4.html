@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { width: 1280px; height: 800px; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0c4a6e; display: flex; align-items: center; justify-content: center; }
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 56px 64px;
+  max-width: 1100px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+h1 { font-size: 40px; font-weight: 800; color: #0c4a6e; margin-bottom: 8px; }
+.sub { font-size: 18px; color: #64748b; margin-bottom: 48px; }
+
+.conversion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.file-box {
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 32px 40px;
+  text-align: center;
+  min-width: 200px;
+}
+
+.file-icon { font-size: 48px; margin-bottom: 8px; }
+.file-name { font-size: 16px; font-weight: 700; color: #334155; margin-bottom: 4px; }
+.file-size { font-size: 14px; color: #94a3b8; }
+.file-format {
+  margin-top: 8px;
+  font-size: 13px; font-weight: 700;
+  padding: 4px 14px; border-radius: 12px;
+  display: inline-block;
+}
+.webp-format { background: #fef3c7; color: #b45309; }
+.jpg-format { background: #fee2e2; color: #dc2626; }
+.png-format { background: #dcfce7; color: #16a34a; }
+
+.arrow-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.arrow {
+  font-size: 48px;
+  color: #4A90D9;
+  font-weight: 700;
+}
+
+.arrow-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4A90D9;
+  background: #eff6ff;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.savings {
+  display: inline-block;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 28px;
+  border-radius: 12px;
+}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Save WebP as JPG in One Click</h1>
+    <div class="sub">No online converters needed. Works right in your browser.</div>
+    <div class="conversion">
+      <div class="file-box">
+        <div class="file-icon">&#128444;</div>
+        <div class="file-name">photo.webp</div>
+        <div class="file-size">2.4 MB</div>
+        <div class="file-format webp-format">WebP</div>
+      </div>
+      <div class="arrow-box">
+        <div class="arrow">&#10132;</div>
+        <div class="arrow-label">Right-click &rarr; Save as JPG</div>
+      </div>
+      <div class="file-box">
+        <div class="file-icon">&#128444;</div>
+        <div class="file-name">photo.jpg</div>
+        <div class="file-size">1.8 MB</div>
+        <div class="file-format jpg-format">JPG</div>
+      </div>
+      <div class="arrow-box">
+        <div class="arrow">&#10132;</div>
+        <div class="arrow-label">or Save as PNG</div>
+      </div>
+      <div class="file-box">
+        <div class="file-icon">&#128444;</div>
+        <div class="file-name">photo.png</div>
+        <div class="file-size">4.1 MB</div>
+        <div class="file-format png-format">PNG</div>
+      </div>
+    </div>
+    <div class="savings">No upload required — instant conversion in your browser</div>
+  </div>
+</body>
+</html>

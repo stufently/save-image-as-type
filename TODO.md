@@ -2,12 +2,7 @@
 
 ## Before Chrome Web Store Publication
 
-- [ ] 5 screenshots 1280x800 with text overlays:
-  1. Context menu on real image — "Right-click. Save as PNG/JPG/WebP/AVIF"
-  2. Format selection submenu — "Convert before saving"
-  3. Popup with quality sliders — "Quality you control"
-  4. Practical use case (WebP → JPG) — "Save WebP as JPG in one click"
-  5. Privacy focus — "On-device conversion. No uploads."
+- [x] 5 screenshots 1280x800 (store/screenshots/mockup1-5.png)
 - [ ] Small promo tile 440x280 (icon + formats + "Save images in one click")
 - [ ] Marquee promo image 1400x560
 - [ ] Privacy policy page (hosted URL for CWS listing)

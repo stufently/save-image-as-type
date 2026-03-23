@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { width: 1280px; height: 800px; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; display: flex; align-items: center; justify-content: center; }
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 48px 56px;
+  max-width: 1060px;
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.left { flex: 1; }
+.left h1 { font-size: 38px; font-weight: 800; color: #1a1a2e; line-height: 1.2; margin-bottom: 12px; }
+.left p { font-size: 18px; color: #666; line-height: 1.5; margin-bottom: 24px; }
+.formats { display: flex; gap: 10px; }
+.fmt { background: #4A90D9; color: #fff; padding: 8px 18px; border-radius: 8px; font-size: 15px; font-weight: 700; }
+.fmt.alt { background: #e8f0fe; color: #4A90D9; }
+
+.right { flex-shrink: 0; position: relative; margin-right: 40px; }
+
+.context-menu {
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  width: 260px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: #333;
+}
+
+.menu-item {
+  padding: 7px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: default;
+}
+
+.menu-item:hover, .menu-item.active {
+  background: #4A90D9;
+  color: #fff;
+}
+
+.menu-separator { border-top: 1px solid #e0e0e0; margin: 4px 0; }
+
+.submenu {
+  position: absolute;
+  left: 240px;
+  top: 130px;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  width: 200px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: #333;
+}
+
+.submenu .menu-item.highlight {
+  background: #4A90D9;
+  color: #fff;
+}
+
+.arrow { font-size: 10px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="left">
+      <h1>Right-Click.<br>Save as Any Format.</h1>
+      <p>Convert and save images instantly from the context menu. No uploads, no servers.</p>
+      <div class="formats">
+        <div class="fmt">PNG</div>
+        <div class="fmt">JPG</div>
+        <div class="fmt">WebP</div>
+        <div class="fmt">AVIF</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="context-menu">
+        <div class="menu-item" style="color:#aaa;">Open image in new tab</div>
+        <div class="menu-item" style="color:#aaa;">Save image as...</div>
+        <div class="menu-item" style="color:#aaa;">Copy image</div>
+        <div class="menu-separator"></div>
+        <div class="menu-item active">
+          Save Image As <span class="arrow">&#9654;</span>
+        </div>
+        <div class="menu-separator"></div>
+        <div class="menu-item" style="color:#aaa;">Inspect</div>
+      </div>
+      <div class="submenu">
+        <div class="menu-item highlight">Save as PNG</div>
+        <div class="menu-item">Save as JPG</div>
+        <div class="menu-item">Save as WebP</div>
+        <div class="menu-item">Save as AVIF</div>
+        <div class="menu-separator"></div>
+        <div class="menu-item" style="color:#888;">Save as default format</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
