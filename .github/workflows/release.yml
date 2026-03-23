@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Verify manifest version matches tag
+        run: |
+          MANIFEST_VERSION=$(grep '"version"' extension/manifest.json | sed 's/.*"\([0-9.]*\)".*/\1/')
+          TAG_VERSION="${{ steps.version.outputs.VERSION }}"
+          if [ "$MANIFEST_VERSION" != "$TAG_VERSION" ]; then
+            echo "ERROR: manifest.json version ($MANIFEST_VERSION) does not match tag (v$TAG_VERSION)"
+            exit 1
+          fi
+
+      - name: Build ZIP
+        run: cd extension && zip -r ../save-image-as-type-${{ steps.version.outputs.VERSION }}.zip . -x '*.DS_Store' '*.git*'
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: save-image-as-type-${{ steps.version.outputs.VERSION }}.zip
+          generate_release_notes: true
