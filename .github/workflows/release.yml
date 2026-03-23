@@ -27,11 +27,19 @@ jobs:
             exit 1
           fi
 
-      - name: Build ZIP
+      - name: Build Chrome/Edge ZIP
         run: cd extension && zip -r ../save-image-as-type-${{ steps.version.outputs.VERSION }}.zip . -x '*.DS_Store' '*.git*'
+
+      - name: Build Opera ZIP (name ≤50 chars)
+        run: |
+          cp -r extension opera-build
+          sed -i 's/"message": "Save Image As PNG, JPG, WebP, AVIF — Image Converter"/"message": "Save Image As PNG, JPG, WebP, AVIF — Converter"/' opera-build/_locales/en/messages.json
+          cd opera-build && zip -r ../save-image-as-type-${{ steps.version.outputs.VERSION }}-opera.zip . -x '*.DS_Store' '*.git*'
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: save-image-as-type-${{ steps.version.outputs.VERSION }}.zip
+          files: |
+            save-image-as-type-${{ steps.version.outputs.VERSION }}.zip
+            save-image-as-type-${{ steps.version.outputs.VERSION }}-opera.zip
           generate_release_notes: true
