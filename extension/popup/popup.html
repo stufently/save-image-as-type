@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=320">
+  <title>Save Image As Type</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Save Image As Type</h1>
+    <p class="subtitle">Right-click any image to save in your preferred format</p>
+
+    <div class="section">
+      <label for="defaultFormat">Default format</label>
+      <select id="defaultFormat">
+        <option value="png">PNG (lossless, transparency)</option>
+        <option value="jpg">JPG (smaller, no transparency)</option>
+        <option value="webp">WebP (modern, small size)</option>
+        <option value="avif">AVIF (newest, smallest)</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <label for="jpgQuality">JPG quality: <span id="jpgQualityValue">92</span>%</label>
+      <input type="range" id="jpgQuality" min="10" max="100" value="92" step="1">
+    </div>
+
+    <div class="section">
+      <label for="webpQuality">WebP quality: <span id="webpQualityValue">90</span>%</label>
+      <input type="range" id="webpQuality" min="10" max="100" value="90" step="1">
+    </div>
+
+    <div class="section">
+      <label for="avifQuality">AVIF quality: <span id="avifQualityValue">80</span>%</label>
+      <input type="range" id="avifQuality" min="10" max="100" value="80" step="1">
+    </div>
+
+    <div id="status" class="status hidden"></div>
+
+    <div class="footer">
+      <p>Tip: Right-click any image on a webpage and select<br><strong>Save Image As &rarr; Format</strong></p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

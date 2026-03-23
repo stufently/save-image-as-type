@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head><title>Icon Generator</title></head>
+<body>
+<p>Open browser console, icons will be generated as download links below.</p>
+<div id="output"></div>
+<script>
+// Generate simple placeholder icons for the extension
+// Open this file in Chrome, then right-click and save each icon
+
+const sizes = [16, 32, 48, 128];
+
+for (const size of sizes) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  // Background circle
+  const pad = size * 0.08;
+  ctx.fillStyle = '#4A90D9';
+  ctx.beginPath();
+  ctx.roundRect(pad, pad, size - pad * 2, size - pad * 2, size * 0.18);
+  ctx.fill();
+
+  // Down arrow (save icon)
+  ctx.strokeStyle = '#FFFFFF';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.lineWidth = Math.max(1.5, size * 0.08);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  const cx = size / 2;
+  const arrowTop = size * 0.22;
+  const arrowBot = size * 0.58;
+  const arrowW = size * 0.2;
+
+  // Vertical line
+  ctx.beginPath();
+  ctx.moveTo(cx, arrowTop);
+  ctx.lineTo(cx, arrowBot);
+  ctx.stroke();
+
+  // Arrow head
+  ctx.beginPath();
+  ctx.moveTo(cx - arrowW, arrowBot - arrowW * 0.8);
+  ctx.lineTo(cx, arrowBot);
+  ctx.lineTo(cx + arrowW, arrowBot - arrowW * 0.8);
+  ctx.stroke();
+
+  // Tray (bottom)
+  const trayY = size * 0.68;
+  const trayW = size * 0.32;
+  const trayH = size * 0.12;
+  ctx.beginPath();
+  ctx.moveTo(cx - trayW, trayY);
+  ctx.lineTo(cx - trayW, trayY + trayH);
+  ctx.lineTo(cx + trayW, trayY + trayH);
+  ctx.lineTo(cx + trayW, trayY);
+  ctx.stroke();
+
+  // Create download link
+  const link = document.createElement('a');
+  link.href = canvas.toDataURL('image/png');
+  link.download = `icon${size}.png`;
+  link.textContent = `Download icon${size}.png`;
+  link.style.display = 'block';
+  link.style.margin = '8px';
+  document.getElementById('output').appendChild(link);
+  document.getElementById('output').appendChild(canvas);
+}
+</script>
+</body>
+</html>

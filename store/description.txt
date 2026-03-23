@@ -1,0 +1,42 @@
+Save Image As Type — Convert & Download Images in Any Format
+
+Right-click any image on any webpage and instantly save it as PNG, JPG, WebP, or AVIF. No uploads, no servers — all conversion happens right in your browser.
+
+FEATURES:
+
+- Right-Click Menu: Right-click any image → "Save Image As" → Choose PNG, JPG, WebP, or AVIF
+- Client-Side Conversion: Your images never leave your browser. Zero data collection, zero uploads
+- Quality Control: Adjustable quality sliders for JPG, WebP, and AVIF formats
+- Smart Filename: Keeps the original filename, just changes the extension
+- Transparency Handling: Automatically adds white background when converting transparent images to JPG
+- Works Everywhere: Handles regular images, data URLs, and cross-origin images
+
+SUPPORTED FORMATS:
+
+- PNG — Lossless quality with transparency support. Best for screenshots, graphics, and images with text
+- JPG/JPEG — Smaller file size, adjustable quality. Best for photos
+- WebP — Modern format with excellent compression. 25-35% smaller than JPG at similar quality
+- AVIF — Next-generation format with the best compression. Requires Chrome 110+
+
+WHY THIS EXTENSION?
+
+- No permissions abuse — we only request what's needed
+- No tracking, no analytics, no data collection
+- No ads, completely free
+- Open source and lightweight
+- Works offline after installation
+
+HOW TO USE:
+
+1. Right-click any image on a webpage
+2. Select "Save Image As" from the context menu
+3. Choose your desired format (PNG, JPG, WebP, AVIF)
+4. Pick where to save — done!
+
+Tip: Click the extension icon to set default quality for JPG, WebP, and AVIF formats.
+
+PRIVACY:
+
+This extension does NOT collect any data. All image conversion happens locally in your browser. No images are uploaded to any server. No analytics, no tracking, no cookies.
+
+Works with Chrome 110 and newer. Manifest V3 compliant.
