@@ -1,0 +1,25 @@
+# TODO
+
+## Before Chrome Web Store Publication
+
+- [ ] 5 screenshots 1280x800 with text overlays:
+  1. Context menu on real image — "Right-click. Save as PNG/JPG/WebP/AVIF"
+  2. Format selection submenu — "Convert before saving"
+  3. Popup with quality sliders — "Quality you control"
+  4. Practical use case (WebP → JPG) — "Save WebP as JPG in one click"
+  5. Privacy focus — "On-device conversion. No uploads."
+- [ ] Small promo tile 440x280 (icon + formats + "Save images in one click")
+- [ ] Marquee promo image 1400x560
+- [ ] Privacy policy page (hosted URL for CWS listing)
+- [ ] Landing page with SEO for long-tail queries (save webp as jpg chrome, etc.)
+- [ ] Set homepage URL, support URL, privacy policy URL in CWS dashboard
+- [ ] Choose category: Photos (fallback: Productivity)
+
+## After Publication
+
+- [ ] Get 20-50 organic installs from warm traffic (GitHub, Twitter, dev communities)
+- [ ] Respond to all reviews within 24-48 hours
+- [ ] Post on Reddit: r/chrome, r/webdev, r/GraphicDesign (useful post, not ads)
+- [ ] Product Hunt launch with demo GIF
+- [ ] YouTube Shorts — 15 sec demo: right-click → choose format
+- [ ] 2-3 updates in the first month (real fixes/improvements)
