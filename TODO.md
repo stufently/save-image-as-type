@@ -26,4 +26,5 @@
 - [ ] YouTube Shorts — 15 sec demo: right-click → choose format
 - [ ] 2-3 updates in the first month (real fixes/improvements)
 - [ ] Cross-publish to Edge Add-ons and Opera Addons (free extra traffic)
+- [ ] SEO-optimize name and description separately in Edge/Opera dashboards (ZIP is the same, but store metadata can differ)
 - [ ] Maintain update cadence: min 1x/month (avoid 6+ month gaps — CWS penalizes)
