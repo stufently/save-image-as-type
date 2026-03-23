@@ -1,6 +1,26 @@
-# Save Image As Type
+# Save Image As PNG, JPG, WebP, AVIF — Image Converter
 
 Chrome extension to save any image from the web as PNG, JPG, WebP, or AVIF. Fast client-side conversion via Canvas API — no uploads, no servers, 100% private.
+
+## Install
+
+### From Stores
+
+<!-- TODO: uncomment when published
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/TODO)
+- [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/TODO)
+- [Opera Add-ons](https://addons.opera.com/extensions/details/TODO)
+-->
+
+Coming soon to Chrome Web Store, Edge Add-ons, and Opera Add-ons.
+
+### Developer Mode
+
+1. Clone this repo or download a [release ZIP](https://github.com/stufently/save-image-as-type/releases)
+2. Open `chrome://extensions/`
+3. Enable "Developer mode" (top right)
+4. Click "Load unpacked"
+5. Select the `extension/` folder
 
 ## Features
 
@@ -9,14 +29,27 @@ Chrome extension to save any image from the web as PNG, JPG, WebP, or AVIF. Fast
 - Quality sliders for lossy formats (JPG, WebP, AVIF)
 - Smart transparency handling (white background for JPG)
 - AVIF support detection with fallback warning
+- Welcome page on first install
 - Manifest V3, minimal permissions
+- Open source
 
-## Install (Developer Mode)
+## How to Use
 
-1. Open `chrome://extensions/`
-2. Enable "Developer mode" (top right)
-3. Click "Load unpacked"
-4. Select the `extension/` folder
+1. Right-click any image on a webpage
+2. Select **Save Image As** from the context menu
+3. Choose your format: PNG, JPG, WebP, or AVIF
+4. Pick where to save — done!
+
+**Tip:** Click the extension icon to adjust default format and quality settings.
+
+## Supported Formats
+
+| Format | Type | Best For |
+|---|---|---|
+| PNG | Lossless | Screenshots, graphics, transparency |
+| JPG | Lossy (adjustable) | Photos, smaller file size |
+| WebP | Lossy (adjustable) | Modern web, 25-35% smaller than JPG |
+| AVIF | Lossy (adjustable) | Maximum compression, Chrome 110+ |
 
 ## Architecture
 
@@ -25,8 +58,10 @@ extension/
 ├── manifest.json          # Manifest V3 config
 ├── background.js          # Service worker: context menus, fetch, download orchestration
 ├── offscreen.html/.js     # Offscreen document for Canvas API image conversion
+├── welcome.html           # Onboarding page shown on first install
 ├── popup/                 # Settings popup (format, quality sliders)
-└── icons/                 # Extension icons (16/32/48/128)
+├── icons/                 # Extension icons (16/32/48/128)
+└── _locales/              # Localization (en, es, pt_BR, de, fr, ja, ru)
 ```
 
 **Why offscreen document?** Service workers cannot use DOM Canvas with `toBlob()` for all formats. The offscreen document provides a real DOM context for image conversion.
@@ -80,10 +115,6 @@ The same ZIP works for all three stores (Manifest V3 compatible).
 - Git tags must match: tag `v1.0.1` requires manifest version `1.0.1`
 - CI verifies the match and fails if they differ
 
-## Store Listing
-
-See `store/` directory for Chrome Web Store description and asset requirements.
-
 ## Localization
 
 Store listing (name + description) is localized in `extension/_locales/`:
@@ -97,3 +128,11 @@ Store listing (name + description) is localized in `extension/_locales/`:
 | French | `fr` |
 | Japanese | `ja` |
 | Russian | `ru` |
+
+## Privacy
+
+This extension does not collect, store, or transmit any data. All image conversion happens locally in your browser. See [PRIVACY.md](PRIVACY.md) for details.
+
+## License
+
+MIT
