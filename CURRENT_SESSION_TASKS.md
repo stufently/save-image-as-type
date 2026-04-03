@@ -3,6 +3,8 @@
 ## Fix offscreen.createDocument invalid reason
 - **Status**: COMPLETED
 
-## Fix all review issues (15 items)
+## Fix all review issues round 1 (15 items)
 - **Status**: COMPLETED
-- **Details**: Fixed all 15 issues from Claude/Gemini/Codex/Cursor code review
+
+## Fix review round 2 issues (9 items)
+- **Status**: IN_PROGRESS

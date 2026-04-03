@@ -1,7 +1,7 @@
 {
   "extName": {
-    "message": "画像をPNG, JPG, WebP, AVIFで保存 — 画像変換ツール",
-    "description": "Extension name"
+    "message": "画像変換 - PNG JPG WebP AVIF保存",
+    "description": "Extension name (max 45 chars for CWS)"
   },
   "extDescription": {
     "message": "画像を右クリックしてPNG、JPG、WebP、AVIFで保存。高速なローカル変換、アップロード不要、完全プライベート。",

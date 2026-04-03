@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.1] - 2026-04-03
+
+### Fixed
+- Fix extName exceeding 45-char CWS limit in 6/7 locales (shortened all names)
+- Fix race condition: idle timer could close offscreen during active conversion (added activeConversions counter)
+- Fix blob URL leak when downloads.download() throws (added try/catch with revokeObjectURL)
+- Fix quality values not validated/clamped in popup and background (added clampQuality)
+- Fix missing lastError check in background getSettings()
+- Clean up redundant \w in Unicode filename regex
+- Remove unnecessary activeTab permission (already have host_permissions + scripting)
+
 ## [1.1.0] - 2026-04-03
 
 ### Fixed

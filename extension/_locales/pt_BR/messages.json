@@ -1,7 +1,7 @@
 {
   "extName": {
-    "message": "Salvar Imagem Como PNG, JPG, WebP, AVIF — Conversor",
-    "description": "Extension name"
+    "message": "Salvar Imagem - PNG JPG WebP AVIF",
+    "description": "Extension name (max 45 chars for CWS)"
   },
   "extDescription": {
     "message": "Clique com o botão direito em qualquer imagem para salvar como PNG, JPG, WebP ou AVIF. Conversão local, sem uploads.",

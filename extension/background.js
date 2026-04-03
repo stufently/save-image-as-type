@@ -17,7 +17,6 @@ const DEFAULT_SETTINGS = {
 
 // --- Context Menu Setup ---
 
-// Fix #5: removeAll before creating to avoid stale menus on update
 chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
     chrome.tabs.create({ url: 'welcome.html' });
@@ -97,21 +96,32 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
 // --- Settings ---
 
+// R2 Fix #5: add lastError check in background getSettings()
 async function getSettings() {
   return new Promise((resolve) => {
     chrome.storage.sync.get(DEFAULT_SETTINGS, (result) => {
+      if (chrome.runtime.lastError) {
+        console.warn('Failed to load settings:', chrome.runtime.lastError.message);
+        resolve({ ...DEFAULT_SETTINGS });
+        return;
+      }
       resolve(result);
     });
   });
 }
 
+// R2 Fix #4: clamp quality values to valid range
 function getQualityForFormat(formatId, settings) {
+  let raw;
   switch (formatId) {
-    case 'jpg': return settings.jpgQuality / 100;
-    case 'webp': return settings.webpQuality / 100;
-    case 'avif': return settings.avifQuality / 100;
+    case 'jpg': raw = settings.jpgQuality; break;
+    case 'webp': raw = settings.webpQuality; break;
+    case 'avif': raw = settings.avifQuality; break;
     default: return undefined; // PNG is lossless
   }
+  const val = Number(raw);
+  if (!Number.isFinite(val) || val < 1 || val > 100) return 0.92;
+  return val / 100;
 }
 
 // --- Image Fetching ---
@@ -126,8 +136,6 @@ async function fetchImage(url, tabId) {
     return await fetchBlobFromTab(url, tabId);
   }
 
-  // Fix #3: removed dead no-cors fallback — with <all_urls> host_permissions,
-  // the cors fetch should work. Opaque responses from no-cors always have size 0.
   const response = await fetch(url, {
     mode: 'cors',
     credentials: 'omit',
@@ -180,12 +188,10 @@ async function fetchBlobFromTab(blobUrl, tabId) {
 
 // --- Image Conversion using OffscreenDocument ---
 
-// Fix #1 & #2: removed stale boolean flag, added promise lock for concurrent calls
 let creatingOffscreen = null;
+let activeConversions = 0; // R2 Fix #2: track active conversions to prevent idle close during work
 
 async function ensureOffscreenDocument() {
-  // Always check actual state instead of relying on a boolean flag
-  // Fix #1: Chrome may close offscreen docs under memory pressure
   try {
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: ['OFFSCREEN_DOCUMENT'],
@@ -195,7 +201,6 @@ async function ensureOffscreenDocument() {
     // getContexts not available (Chrome < 116)
   }
 
-  // Fix #2: prevent race condition with concurrent createDocument calls
   if (creatingOffscreen) return creatingOffscreen;
 
   creatingOffscreen = chrome.offscreen.createDocument({
@@ -211,12 +216,17 @@ async function ensureOffscreenDocument() {
   return creatingOffscreen;
 }
 
-// Fix #8: close offscreen document after idle period to free memory
+// R2 Fix #2: only close offscreen when no active conversions
 let offscreenIdleTimer = null;
 
 function resetOffscreenIdleTimer() {
   if (offscreenIdleTimer) clearTimeout(offscreenIdleTimer);
+  // Don't schedule close if conversions are still in progress
+  if (activeConversions > 0) return;
   offscreenIdleTimer = setTimeout(async () => {
+    offscreenIdleTimer = null;
+    // Double-check no conversions started while timer was pending
+    if (activeConversions > 0) return;
     try {
       const contexts = await chrome.runtime.getContexts({
         contextTypes: ['OFFSCREEN_DOCUMENT'],
@@ -227,29 +237,38 @@ function resetOffscreenIdleTimer() {
     } catch (e) {
       // Already closed or not available
     }
-    offscreenIdleTimer = null;
-  }, 30000); // Close after 30s idle
+  }, 30000);
 }
 
 async function convertImage(blob, targetMime, quality) {
   await ensureOffscreenDocument();
+  // Cancel idle timer while conversion is active
+  if (offscreenIdleTimer) {
+    clearTimeout(offscreenIdleTimer);
+    offscreenIdleTimer = null;
+  }
+  activeConversions++;
 
   const arrayBuffer = await blob.arrayBuffer();
 
   return new Promise((resolve, reject) => {
-    // Fix #4: use crypto.randomUUID() instead of Date.now() + Math.random()
     const messageId = crypto.randomUUID();
 
-    const timeout = setTimeout(() => {
+    const cleanup = () => {
       chrome.runtime.onMessage.removeListener(listener);
+      clearTimeout(timeout);
+      activeConversions--;
+      resetOffscreenIdleTimer();
+    };
+
+    const timeout = setTimeout(() => {
+      cleanup();
       reject(new Error('Image conversion timed out'));
     }, 30000);
 
     const listener = (message) => {
       if (message.type !== 'conversion-result' || message.id !== messageId) return;
-      chrome.runtime.onMessage.removeListener(listener);
-      clearTimeout(timeout);
-      resetOffscreenIdleTimer();
+      cleanup();
 
       if (message.error) {
         reject(new Error(message.error));
@@ -274,9 +293,7 @@ async function convertImage(blob, targetMime, quality) {
       targetMime: targetMime,
       quality: quality,
     }).catch((err) => {
-      // Fix: clean up listener and timeout if sendMessage fails
-      chrome.runtime.onMessage.removeListener(listener);
-      clearTimeout(timeout);
+      cleanup();
       reject(new Error('Failed to send conversion request: ' + err.message));
     });
   });
@@ -284,19 +301,24 @@ async function convertImage(blob, targetMime, quality) {
 
 // --- Download ---
 
-// Fix #11: use downloads.onChanged to revoke URL instead of blind 60s timeout
+// R2 Fix #3: wrap download in try/catch to revoke URL on failure
 async function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
+  let downloadId;
 
-  const downloadId = await chrome.downloads.download({
-    url: url,
-    filename: filename,
-    saveAs: true,
-  });
+  try {
+    downloadId = await chrome.downloads.download({
+      url: url,
+      filename: filename,
+      saveAs: true,
+    });
+  } catch (err) {
+    URL.revokeObjectURL(url);
+    throw err;
+  }
 
   const onChanged = (delta) => {
     if (delta.id !== downloadId) return;
-    // Revoke when download completes, is interrupted, or cancelled
     if (delta.state && (delta.state.current === 'complete' || delta.state.current === 'interrupted')) {
       chrome.downloads.onChanged.removeListener(onChanged);
       URL.revokeObjectURL(url);
@@ -329,8 +351,8 @@ function buildFilename(srcUrl, ext) {
       const lastPart = decodeURIComponent(parts[parts.length - 1]);
       const dotIndex = lastPart.lastIndexOf('.');
       name = dotIndex > 0 ? lastPart.substring(0, dotIndex) : lastPart;
-      // Fix #6: Unicode-aware regex to preserve non-ASCII characters in filenames
-      name = name.replace(/[^\p{L}\p{N}\w\-\.]/gu, '_').replace(/_+/g, '_');
+      // R2 Fix #9: clean up redundant \w, use explicit _ for underscore
+      name = name.replace(/[^\p{L}\p{N}_\-\.]/gu, '_').replace(/_+/g, '_');
       if (name.length > 100) name = name.substring(0, 100);
       if (!name) name = 'image';
     }
@@ -343,9 +365,7 @@ function buildFilename(srcUrl, ext) {
 
 // --- Error Notification ---
 
-// Fix #13: use chrome.notifications instead of alert() for less intrusive UX
 function notifyError(tabId, message) {
-  // Try notifications API first (less intrusive)
   if (chrome.notifications) {
     chrome.notifications.create({
       type: 'basic',
@@ -356,7 +376,6 @@ function notifyError(tabId, message) {
     return;
   }
 
-  // Fallback to alert via content script
   if (!tabId) {
     console.warn('Save Image As Type error (no tab):', message);
     return;
