@@ -222,8 +222,8 @@ async function ensureOffscreenDocument() {
   try {
     await chrome.offscreen.createDocument({
       url: 'offscreen.html',
-      reasons: ['CANVAS'],
-      justification: 'Convert image format using Canvas API',
+      reasons: ['BLOBS'],
+      justification: 'Convert images using Canvas.toBlob() and createImageBitmap which are not available in Service Workers',
     });
     offscreenDocumentCreated = true;
   } catch (e) {

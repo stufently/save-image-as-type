@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] - 2026-04-03
+
+### Fixed
+- Fix offscreen.createDocument invalid reason: CANVAS → BLOBS (Chrome Web Store rejection fix)
+
 ## [1.0.0] - 2026-03-23
 
 ### Added
