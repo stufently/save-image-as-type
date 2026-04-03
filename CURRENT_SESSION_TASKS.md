@@ -7,4 +7,7 @@
 - **Status**: COMPLETED
 
 ## Fix review round 2 issues (9 items)
-- **Status**: IN_PROGRESS
+- **Status**: COMPLETED
+
+## Fix review round 3 issues (3 items)
+- **Status**: COMPLETED

@@ -5,8 +5,8 @@
 // Fix #7: maximum pixel count to prevent memory exhaustion
 const MAX_PIXELS = 100_000_000; // 100 megapixels
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type !== 'convert-image') return;
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type !== 'convert-image') return false;
 
   handleConversion(message)
     .then((result) => {

@@ -110,17 +110,17 @@ async function getSettings() {
   });
 }
 
-// R2 Fix #4: clamp quality values to valid range
+// R2 Fix #4: clamp quality values to valid range (10-100, matching popup)
 function getQualityForFormat(formatId, settings) {
-  let raw;
+  let raw, fallback;
   switch (formatId) {
-    case 'jpg': raw = settings.jpgQuality; break;
-    case 'webp': raw = settings.webpQuality; break;
-    case 'avif': raw = settings.avifQuality; break;
+    case 'jpg': raw = settings.jpgQuality; fallback = DEFAULT_SETTINGS.jpgQuality; break;
+    case 'webp': raw = settings.webpQuality; fallback = DEFAULT_SETTINGS.webpQuality; break;
+    case 'avif': raw = settings.avifQuality; fallback = DEFAULT_SETTINGS.avifQuality; break;
     default: return undefined; // PNG is lossless
   }
   const val = Number(raw);
-  if (!Number.isFinite(val) || val < 1 || val > 100) return 0.92;
+  if (!Number.isFinite(val) || val < 10 || val > 100) return fallback / 100;
   return val / 100;
 }
 
@@ -249,12 +249,24 @@ async function convertImage(blob, targetMime, quality) {
   }
   activeConversions++;
 
-  const arrayBuffer = await blob.arrayBuffer();
+  // R3 Fix #1: wrap arrayBuffer in try/catch so activeConversions is always decremented
+  let arrayBuffer;
+  try {
+    arrayBuffer = await blob.arrayBuffer();
+  } catch (err) {
+    activeConversions--;
+    resetOffscreenIdleTimer();
+    throw err;
+  }
 
   return new Promise((resolve, reject) => {
     const messageId = crypto.randomUUID();
 
+    // R3 Fix #3: settled flag prevents double-decrement on race between timeout/listener/catch
+    let settled = false;
     const cleanup = () => {
+      if (settled) return;
+      settled = true;
       chrome.runtime.onMessage.removeListener(listener);
       clearTimeout(timeout);
       activeConversions--;

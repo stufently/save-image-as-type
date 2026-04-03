@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2] - 2026-04-03
+
+### Fixed
+- Fix activeConversions leak if blob.arrayBuffer() throws (try/catch with decrement)
+- Fix potential double-decrement of activeConversions on race condition (settled flag)
+- Align quality clamp range 10-100 and per-format fallback defaults between popup and background
+- Suppress console warning in offscreen.js by returning false from unused onMessage
+
 ## [1.1.1] - 2026-04-03
 
 ### Fixed
