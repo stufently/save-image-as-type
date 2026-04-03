@@ -2,10 +2,10 @@
 // Handles context menus, image fetching, conversion via OffscreenDocument, and downloads.
 
 const FORMATS = [
-  { id: 'png', title: 'Save as PNG', mime: 'image/png', ext: 'png' },
-  { id: 'jpg', title: 'Save as JPG', mime: 'image/jpeg', ext: 'jpg' },
-  { id: 'webp', title: 'Save as WebP', mime: 'image/webp', ext: 'webp' },
-  { id: 'avif', title: 'Save as AVIF', mime: 'image/avif', ext: 'avif' },
+  { id: 'png', title: chrome.i18n.getMessage('menuSaveAsPng') || 'Save as PNG', mime: 'image/png', ext: 'png' },
+  { id: 'jpg', title: chrome.i18n.getMessage('menuSaveAsJpg') || 'Save as JPG', mime: 'image/jpeg', ext: 'jpg' },
+  { id: 'webp', title: chrome.i18n.getMessage('menuSaveAsWebp') || 'Save as WebP', mime: 'image/webp', ext: 'webp' },
+  { id: 'avif', title: chrome.i18n.getMessage('menuSaveAsAvif') || 'Save as AVIF', mime: 'image/avif', ext: 'avif' },
 ];
 
 const DEFAULT_SETTINGS = {
@@ -17,20 +17,20 @@ const DEFAULT_SETTINGS = {
 
 // --- Context Menu Setup ---
 
-chrome.runtime.onInstalled.addListener((details) => {
-  // Show welcome page on first install
+// Fix #5: removeAll before creating to avoid stale menus on update
+chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
     chrome.tabs.create({ url: 'welcome.html' });
   }
 
-  // Parent menu
+  await chrome.contextMenus.removeAll();
+
   chrome.contextMenus.create({
     id: 'save-image-parent',
-    title: 'Save Image As',
+    title: chrome.i18n.getMessage('menuSaveImageAs') || 'Save Image As',
     contexts: ['image'],
   });
 
-  // Format submenus
   for (const fmt of FORMATS) {
     chrome.contextMenus.create({
       id: `save-as-${fmt.id}`,
@@ -40,7 +40,6 @@ chrome.runtime.onInstalled.addListener((details) => {
     });
   }
 
-  // Separator + "Save as default" option
   chrome.contextMenus.create({
     id: 'save-as-separator',
     parentId: 'save-image-parent',
@@ -51,7 +50,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   chrome.contextMenus.create({
     id: 'save-as-default',
     parentId: 'save-image-parent',
-    title: 'Save as default format',
+    title: chrome.i18n.getMessage('menuSaveAsDefault') || 'Save as default format',
     contexts: ['image'],
   });
 });
@@ -92,7 +91,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     await downloadBlob(convertedBlob, filename);
   } catch (err) {
     console.error('Save Image As Type error:', err);
-    notifyError(tab?.id, `Failed to save image: ${err.message}`);
+    notifyError(tab?.id, `Failed to save image: ${err.message || 'Unknown error'}`);
   }
 });
 
@@ -118,46 +117,27 @@ function getQualityForFormat(formatId, settings) {
 // --- Image Fetching ---
 
 async function fetchImage(url, tabId) {
-  // Handle data: URLs directly
   if (url.startsWith('data:')) {
     const response = await fetch(url);
     return await response.blob();
   }
 
-  // Handle blob: URLs — need to read from the page context via content script
   if (url.startsWith('blob:')) {
     return await fetchBlobFromTab(url, tabId);
   }
 
-  // Try fetching with extension permissions (service worker fetch bypasses CORS
-  // when host_permissions include the target origin)
-  try {
-    const response = await fetch(url, {
-      mode: 'cors',
-      credentials: 'omit',
-    });
-    if (response.ok) {
-      return await response.blob();
-    }
-  } catch (e) {
-    // Fall through to next method
+  // Fix #3: removed dead no-cors fallback — with <all_urls> host_permissions,
+  // the cors fetch should work. Opaque responses from no-cors always have size 0.
+  const response = await fetch(url, {
+    mode: 'cors',
+    credentials: 'omit',
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} fetching image`);
   }
 
-  // Retry without CORS restriction
-  try {
-    const response = await fetch(url, {
-      mode: 'no-cors',
-    });
-    // no-cors gives opaque response, blob may be empty
-    const blob = await response.blob();
-    if (blob.size > 0) {
-      return blob;
-    }
-  } catch (e) {
-    // Fall through
-  }
-
-  throw new Error('Could not download the image. The server may be blocking access.');
+  return await response.blob();
 }
 
 // Fetch blob: URLs by injecting a content script that reads the blob
@@ -200,52 +180,66 @@ async function fetchBlobFromTab(blobUrl, tabId) {
 
 // --- Image Conversion using OffscreenDocument ---
 
-let offscreenDocumentCreated = false;
+// Fix #1 & #2: removed stale boolean flag, added promise lock for concurrent calls
+let creatingOffscreen = null;
 
 async function ensureOffscreenDocument() {
-  if (offscreenDocumentCreated) return;
-
-  // Check if already exists (requires Chrome 116+)
+  // Always check actual state instead of relying on a boolean flag
+  // Fix #1: Chrome may close offscreen docs under memory pressure
   try {
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: ['OFFSCREEN_DOCUMENT'],
     });
-
-    if (existingContexts.length > 0) {
-      offscreenDocumentCreated = true;
-      return;
-    }
+    if (existingContexts.length > 0) return;
   } catch (e) {
-    // getContexts not available, try creating and handle duplicate error
+    // getContexts not available (Chrome < 116)
   }
 
-  try {
-    await chrome.offscreen.createDocument({
-      url: 'offscreen.html',
-      reasons: ['BLOBS'],
-      justification: 'Convert images using Canvas.toBlob() and createImageBitmap which are not available in Service Workers',
-    });
-    offscreenDocumentCreated = true;
-  } catch (e) {
-    // Document may already exist
-    if (e.message?.includes('already exists')) {
-      offscreenDocumentCreated = true;
-    } else {
-      throw e;
+  // Fix #2: prevent race condition with concurrent createDocument calls
+  if (creatingOffscreen) return creatingOffscreen;
+
+  creatingOffscreen = chrome.offscreen.createDocument({
+    url: 'offscreen.html',
+    reasons: ['BLOBS'],
+    justification: 'Convert images using Canvas.toBlob() and createImageBitmap which are not available in Service Workers',
+  }).catch((e) => {
+    if (!e.message?.includes('already exists')) throw e;
+  }).finally(() => {
+    creatingOffscreen = null;
+  });
+
+  return creatingOffscreen;
+}
+
+// Fix #8: close offscreen document after idle period to free memory
+let offscreenIdleTimer = null;
+
+function resetOffscreenIdleTimer() {
+  if (offscreenIdleTimer) clearTimeout(offscreenIdleTimer);
+  offscreenIdleTimer = setTimeout(async () => {
+    try {
+      const contexts = await chrome.runtime.getContexts({
+        contextTypes: ['OFFSCREEN_DOCUMENT'],
+      });
+      if (contexts.length > 0) {
+        await chrome.offscreen.closeDocument();
+      }
+    } catch (e) {
+      // Already closed or not available
     }
-  }
+    offscreenIdleTimer = null;
+  }, 30000); // Close after 30s idle
 }
 
 async function convertImage(blob, targetMime, quality) {
   await ensureOffscreenDocument();
 
-  // Convert blob to array buffer for transfer
   const arrayBuffer = await blob.arrayBuffer();
 
   return new Promise((resolve, reject) => {
-    const messageId = Date.now() + Math.random();
+    // Fix #4: use crypto.randomUUID() instead of Date.now() + Math.random()
+    const messageId = crypto.randomUUID();
 
-    // Timeout after 30 seconds
     const timeout = setTimeout(() => {
       chrome.runtime.onMessage.removeListener(listener);
       reject(new Error('Image conversion timed out'));
@@ -255,6 +249,7 @@ async function convertImage(blob, targetMime, quality) {
       if (message.type !== 'conversion-result' || message.id !== messageId) return;
       chrome.runtime.onMessage.removeListener(listener);
       clearTimeout(timeout);
+      resetOffscreenIdleTimer();
 
       if (message.error) {
         reject(new Error(message.error));
@@ -278,25 +273,42 @@ async function convertImage(blob, targetMime, quality) {
       sourceMime: blob.type,
       targetMime: targetMime,
       quality: quality,
+    }).catch((err) => {
+      // Fix: clean up listener and timeout if sendMessage fails
+      chrome.runtime.onMessage.removeListener(listener);
+      clearTimeout(timeout);
+      reject(new Error('Failed to send conversion request: ' + err.message));
     });
   });
 }
 
 // --- Download ---
 
+// Fix #11: use downloads.onChanged to revoke URL instead of blind 60s timeout
 async function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
 
-  try {
-    await chrome.downloads.download({
-      url: url,
-      filename: filename,
-      saveAs: true,
-    });
-  } finally {
-    // Clean up after a delay to allow download to start
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-  }
+  const downloadId = await chrome.downloads.download({
+    url: url,
+    filename: filename,
+    saveAs: true,
+  });
+
+  const onChanged = (delta) => {
+    if (delta.id !== downloadId) return;
+    // Revoke when download completes, is interrupted, or cancelled
+    if (delta.state && (delta.state.current === 'complete' || delta.state.current === 'interrupted')) {
+      chrome.downloads.onChanged.removeListener(onChanged);
+      URL.revokeObjectURL(url);
+    }
+  };
+  chrome.downloads.onChanged.addListener(onChanged);
+
+  // Safety fallback: revoke after 5 minutes max
+  setTimeout(() => {
+    chrome.downloads.onChanged.removeListener(onChanged);
+    URL.revokeObjectURL(url);
+  }, 300000);
 }
 
 // --- Filename Helpers ---
@@ -305,7 +317,6 @@ function buildFilename(srcUrl, ext) {
   let name = 'image';
 
   try {
-    // For data: and blob: URLs, use generic name
     if (srcUrl.startsWith('data:') || srcUrl.startsWith('blob:')) {
       return `image.${ext}`;
     }
@@ -316,12 +327,10 @@ function buildFilename(srcUrl, ext) {
 
     if (parts.length > 0) {
       const lastPart = decodeURIComponent(parts[parts.length - 1]);
-      // Remove existing extension
       const dotIndex = lastPart.lastIndexOf('.');
       name = dotIndex > 0 ? lastPart.substring(0, dotIndex) : lastPart;
-      // Clean the name — allow unicode letters too
-      name = name.replace(/[^\w\-\.]/g, '_').replace(/_+/g, '_');
-      // Limit length
+      // Fix #6: Unicode-aware regex to preserve non-ASCII characters in filenames
+      name = name.replace(/[^\p{L}\p{N}\w\-\.]/gu, '_').replace(/_+/g, '_');
       if (name.length > 100) name = name.substring(0, 100);
       if (!name) name = 'image';
     }
@@ -334,7 +343,20 @@ function buildFilename(srcUrl, ext) {
 
 // --- Error Notification ---
 
+// Fix #13: use chrome.notifications instead of alert() for less intrusive UX
 function notifyError(tabId, message) {
+  // Try notifications API first (less intrusive)
+  if (chrome.notifications) {
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: 'icons/icon128.png',
+      title: 'Save Image As Type',
+      message: message,
+    });
+    return;
+  }
+
+  // Fallback to alert via content script
   if (!tabId) {
     console.warn('Save Image As Type error (no tab):', message);
     return;

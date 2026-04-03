@@ -6,5 +6,29 @@
   "extDescription": {
     "message": "Правый клик по изображению — сохранить как PNG, JPG, WebP или AVIF. Быстрая конвертация в браузере, без загрузки на сервер.",
     "description": "Extension description for Chrome Web Store"
+  },
+  "menuSaveImageAs": {
+    "message": "Сохранить изображение как",
+    "description": "Parent context menu title"
+  },
+  "menuSaveAsPng": {
+    "message": "Сохранить как PNG",
+    "description": "Context menu item for PNG"
+  },
+  "menuSaveAsJpg": {
+    "message": "Сохранить как JPG",
+    "description": "Context menu item for JPG"
+  },
+  "menuSaveAsWebp": {
+    "message": "Сохранить как WebP",
+    "description": "Context menu item for WebP"
+  },
+  "menuSaveAsAvif": {
+    "message": "Сохранить как AVIF",
+    "description": "Context menu item for AVIF"
+  },
+  "menuSaveAsDefault": {
+    "message": "Сохранить в формате по умолчанию",
+    "description": "Context menu item for default format"
   }
 }

@@ -7,6 +7,8 @@ const DEFAULT_SETTINGS = {
   avifQuality: 80,
 };
 
+const VALID_FORMATS = ['png', 'jpg', 'webp', 'avif'];
+
 const elements = {};
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,8 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
   bindEvents();
 });
 
+// Fix #15: check chrome.runtime.lastError in storage callbacks
 function loadSettings() {
   chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
+    if (chrome.runtime.lastError) {
+      console.warn('Failed to load settings:', chrome.runtime.lastError.message);
+      return;
+    }
+    // Validate format
+    if (!VALID_FORMATS.includes(settings.defaultFormat)) {
+      settings.defaultFormat = 'png';
+    }
     elements.defaultFormat.value = settings.defaultFormat;
     elements.jpgQuality.value = settings.jpgQuality;
     elements.jpgQualityValue.textContent = settings.jpgQuality;
@@ -38,7 +49,6 @@ function loadSettings() {
 function bindEvents() {
   elements.defaultFormat.addEventListener('change', saveSettings);
 
-  // Quality sliders
   for (const key of ['jpgQuality', 'webpQuality', 'avifQuality']) {
     elements[key].addEventListener('input', () => {
       elements[`${key}Value`].textContent = elements[key].value;
@@ -55,7 +65,16 @@ function saveSettings() {
     avifQuality: parseInt(elements.avifQuality.value, 10),
   };
 
+  // Validate format
+  if (!VALID_FORMATS.includes(settings.defaultFormat)) {
+    settings.defaultFormat = 'png';
+  }
+
   chrome.storage.sync.set(settings, () => {
+    if (chrome.runtime.lastError) {
+      console.warn('Failed to save settings:', chrome.runtime.lastError.message);
+      return;
+    }
     showStatus('Settings saved');
   });
 }
@@ -67,5 +86,7 @@ function showStatus(message) {
 
   setTimeout(() => {
     elements.status.classList.add('hidden');
+    // Fix #14b: clean up success class to avoid stale state
+    elements.status.classList.remove('success');
   }, 1500);
 }

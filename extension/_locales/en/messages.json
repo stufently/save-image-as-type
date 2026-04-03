@@ -6,5 +6,29 @@
   "extDescription": {
     "message": "Right-click any image to save as PNG, JPG, WebP, or AVIF. Fast client-side format converter. No uploads, 100% private.",
     "description": "Extension description for Chrome Web Store"
+  },
+  "menuSaveImageAs": {
+    "message": "Save Image As",
+    "description": "Parent context menu title"
+  },
+  "menuSaveAsPng": {
+    "message": "Save as PNG",
+    "description": "Context menu item for PNG"
+  },
+  "menuSaveAsJpg": {
+    "message": "Save as JPG",
+    "description": "Context menu item for JPG"
+  },
+  "menuSaveAsWebp": {
+    "message": "Save as WebP",
+    "description": "Context menu item for WebP"
+  },
+  "menuSaveAsAvif": {
+    "message": "Save as AVIF",
+    "description": "Context menu item for AVIF"
+  },
+  "menuSaveAsDefault": {
+    "message": "Save as default format",
+    "description": "Context menu item for default format"
   }
 }

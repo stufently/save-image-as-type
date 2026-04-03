@@ -6,5 +6,29 @@
   "extDescription": {
     "message": "画像を右クリックしてPNG、JPG、WebP、AVIFで保存。高速なローカル変換、アップロード不要、完全プライベート。",
     "description": "Extension description for Chrome Web Store"
+  },
+  "menuSaveImageAs": {
+    "message": "名前を付けて画像を保存",
+    "description": "Parent context menu title"
+  },
+  "menuSaveAsPng": {
+    "message": "PNGで保存",
+    "description": "Context menu item for PNG"
+  },
+  "menuSaveAsJpg": {
+    "message": "JPGで保存",
+    "description": "Context menu item for JPG"
+  },
+  "menuSaveAsWebp": {
+    "message": "WebPで保存",
+    "description": "Context menu item for WebP"
+  },
+  "menuSaveAsAvif": {
+    "message": "AVIFで保存",
+    "description": "Context menu item for AVIF"
+  },
+  "menuSaveAsDefault": {
+    "message": "デフォルト形式で保存",
+    "description": "Context menu item for default format"
   }
 }

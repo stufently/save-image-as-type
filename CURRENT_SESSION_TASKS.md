@@ -2,4 +2,7 @@
 
 ## Fix offscreen.createDocument invalid reason
 - **Status**: COMPLETED
-- **Details**: Chrome Web Store rejected extension because `reasons: ['CANVAS']` is not a valid value for `offscreen.createDocument`. Changed to `reasons: ['BLOBS']` — confirmed by Codex, Gemini, and Cursor as the correct semantic choice.
+
+## Fix all review issues (15 items)
+- **Status**: COMPLETED
+- **Details**: Fixed all 15 issues from Claude/Gemini/Codex/Cursor code review
