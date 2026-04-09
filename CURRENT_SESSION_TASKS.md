@@ -7,6 +7,6 @@
 - **Fix**: Base64 encoding for message passing, SVG support, Image element fallback
 
 ## Add auto-build on push to master
-- **Status**: IN_PROGRESS
+- **Status**: COMPLETED
 - **Issue**: Release workflow only triggers on tag pushes, no CI on regular pushes
-- **Fix**: Add CI workflow + push v1.1.3 tag
+- **Fix**: Added build.yml workflow + pushed v1.1.3 tag

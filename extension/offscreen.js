@@ -81,6 +81,9 @@ chrome.runtime.onMessage.addListener((message) => {
     });
 });
 
+// Signal to background that listener is registered and ready
+chrome.runtime.sendMessage({ type: 'offscreen-ready' }).catch(() => {});
+
 async function handleConversion(message) {
   const { imageData, sourceMime, targetMime, quality } = message;
 

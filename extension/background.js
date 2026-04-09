@@ -226,13 +226,36 @@ async function ensureOffscreenDocument() {
 
   if (creatingOffscreen) return creatingOffscreen;
 
-  creatingOffscreen = chrome.offscreen.createDocument({
-    url: 'offscreen.html',
-    reasons: ['BLOBS'],
-    justification: 'Convert images using Canvas.toBlob() and createImageBitmap which are not available in Service Workers',
-  }).catch((e) => {
-    if (!e.message?.includes('already exists')) throw e;
-  }).finally(() => {
+  creatingOffscreen = (async () => {
+    // Set up listener for the ready signal BEFORE creating the document
+    const readyPromise = new Promise((resolve) => {
+      const onReady = (message) => {
+        if (message.type === 'offscreen-ready') {
+          chrome.runtime.onMessage.removeListener(onReady);
+          resolve();
+        }
+      };
+      chrome.runtime.onMessage.addListener(onReady);
+      // Safety timeout: proceed after 2s even if ready signal is lost
+      setTimeout(() => {
+        chrome.runtime.onMessage.removeListener(onReady);
+        resolve();
+      }, 2000);
+    });
+
+    try {
+      await chrome.offscreen.createDocument({
+        url: 'offscreen.html',
+        reasons: ['BLOBS'],
+        justification: 'Convert images using Canvas.toBlob() and createImageBitmap which are not available in Service Workers',
+      });
+    } catch (e) {
+      if (!e.message?.includes('already exists')) throw e;
+    }
+
+    // Wait for offscreen.js to load and register its onMessage listener
+    await readyPromise;
+  })().finally(() => {
     creatingOffscreen = null;
   });
 
