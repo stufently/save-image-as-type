@@ -360,36 +360,17 @@ async function convertImage(blob, targetMime, quality) {
 
 // --- Download ---
 
-// R2 Fix #3: wrap download in try/catch to revoke URL on failure
+// Download converted blob using data URL (URL.createObjectURL is not available in service workers)
 async function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  let downloadId;
+  const arrayBuffer = await blob.arrayBuffer();
+  const base64 = arrayBufferToBase64(arrayBuffer);
+  const dataUrl = `data:${blob.type};base64,${base64}`;
 
-  try {
-    downloadId = await chrome.downloads.download({
-      url: url,
-      filename: filename,
-      saveAs: true,
-    });
-  } catch (err) {
-    URL.revokeObjectURL(url);
-    throw err;
-  }
-
-  const onChanged = (delta) => {
-    if (delta.id !== downloadId) return;
-    if (delta.state && (delta.state.current === 'complete' || delta.state.current === 'interrupted')) {
-      chrome.downloads.onChanged.removeListener(onChanged);
-      URL.revokeObjectURL(url);
-    }
-  };
-  chrome.downloads.onChanged.addListener(onChanged);
-
-  // Safety fallback: revoke after 5 minutes max
-  setTimeout(() => {
-    chrome.downloads.onChanged.removeListener(onChanged);
-    URL.revokeObjectURL(url);
-  }, 300000);
+  await chrome.downloads.download({
+    url: dataUrl,
+    filename: filename,
+    saveAs: true,
+  });
 }
 
 // --- Filename Helpers ---
