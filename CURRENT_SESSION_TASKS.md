@@ -1,13 +1,7 @@
-# Current Session Tasks — 2026-04-03
+# Current Session Tasks — 2026-04-09
 
-## Fix offscreen.createDocument invalid reason
+## Fix CWS rejection — "source image could not be decoded"
 - **Status**: COMPLETED
-
-## Fix all review issues round 1 (15 items)
-- **Status**: COMPLETED
-
-## Fix review round 2 issues (9 items)
-- **Status**: COMPLETED
-
-## Fix review round 3 issues (3 items)
-- **Status**: COMPLETED
+- **Issue**: CWS rejected extension — images fail to download with "The source image could not be decoded"
+- **Root cause**: ArrayBuffer data lost during chrome.runtime.sendMessage (JSON serialization on Chrome < 118), plus no SVG support
+- **Fix**: Base64 encoding for message passing, SVG support, Image element fallback

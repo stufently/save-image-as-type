@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3] - 2026-04-09
+
+### Fixed
+- Fix "source image could not be decoded" error (CWS rejection fix): use base64 encoding for ArrayBuffer data in chrome.runtime.sendMessage between service worker and offscreen document — JSON serialization on Chrome < 118 was destroying ArrayBuffer data
+- Add SVG image support: createImageBitmap cannot decode SVG blobs, now falls back to Image element rendering
+- Add Image element fallback for any image format that createImageBitmap fails to decode
+
 ## [1.1.2] - 2026-04-03
 
 ### Fixed

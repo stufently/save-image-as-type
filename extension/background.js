@@ -15,6 +15,29 @@ const DEFAULT_SETTINGS = {
   avifQuality: 80,
 };
 
+// --- Base64 Helpers for Message Passing ---
+// chrome.runtime.sendMessage uses JSON serialization on Chrome < 118,
+// which destroys ArrayBuffer data. Base64 survives all serialization modes.
+
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const CHUNK = 0x8000;
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(binary);
+}
+
+function base64ToArrayBuffer(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
 // --- Context Menu Setup ---
 
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -288,7 +311,8 @@ async function convertImage(blob, targetMime, quality) {
       }
 
       if (message.data) {
-        const resultBlob = new Blob([message.data], { type: targetMime });
+        const resultBuffer = base64ToArrayBuffer(message.data);
+        const resultBlob = new Blob([resultBuffer], { type: targetMime });
         resolve(resultBlob);
       } else {
         resolve(null);
@@ -300,7 +324,7 @@ async function convertImage(blob, targetMime, quality) {
     chrome.runtime.sendMessage({
       type: 'convert-image',
       id: messageId,
-      imageData: arrayBuffer,
+      imageData: arrayBufferToBase64(arrayBuffer),
       sourceMime: blob.type,
       targetMime: targetMime,
       quality: quality,
