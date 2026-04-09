@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version from manifest
+        id: version
+        run: |
+          VERSION=$(grep '"version"' extension/manifest.json | sed 's/.*"\([0-9.]*\)".*/\1/')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build Chrome/Edge ZIP
+        run: cd extension && zip -r ../save-image-as-type-${{ steps.version.outputs.VERSION }}.zip . -x '*.DS_Store' '*.git*'
+
+      - name: Build Opera ZIP
+        run: |
+          cp -r extension opera-build
+          sed -i 's/"message": "Save Image As PNG, JPG, WebP, AVIF — Image Converter"/"message": "Save Image As PNG, JPG, WebP, AVIF — Converter"/' opera-build/_locales/en/messages.json
+          cd opera-build && zip -r ../save-image-as-type-${{ steps.version.outputs.VERSION }}-opera.zip . -x '*.DS_Store' '*.git*'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-zips-${{ steps.version.outputs.VERSION }}
+          path: |
+            save-image-as-type-${{ steps.version.outputs.VERSION }}.zip
+            save-image-as-type-${{ steps.version.outputs.VERSION }}-opera.zip
