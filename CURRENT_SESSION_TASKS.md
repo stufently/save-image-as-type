@@ -10,3 +10,13 @@
 - **Status**: COMPLETED
 - **Issue**: Release workflow only triggers on tag pushes, no CI on regular pushes
 - **Fix**: Added build.yml workflow + pushed v1.1.3 tag
+
+## Fix offscreen race condition
+- **Status**: COMPLETED
+- **Issue**: "ничего не происходит" — offscreen document script not loaded when message sent
+- **Fix**: ping/pong ready signal (offscreen-ready), bump to v1.1.4
+
+## Automated testing in Docker
+- **Status**: COMPLETED
+- **Approach**: Playwright + Chromium + --load-extension + sw.evaluate
+- **Result**: 9/9 core tests PASS (PNG, JPEG, WebP, SVG, fetch, offscreen)
