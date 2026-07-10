@@ -1,36 +1,34 @@
-Save Image As PNG, JPG, WebP, AVIF — Image Converter
+Save Image As PNG, JPG, WebP — Image Converter
 
-Right-click any image on any webpage and instantly save it as PNG, JPG, WebP, or AVIF. All conversion happens right in your browser — no uploads, no servers, no data collection.
+Right-click any image on any webpage and instantly save it as PNG, JPG, or WebP. All conversion happens right in your browser — no uploads, no servers, no data collection.
 
 FEATURES:
 
-- Save Image As PNG, JPG, WebP, or AVIF: Right-click any image → "Save Image As" → Choose format
+- Save Image As PNG, JPG, or WebP: Right-click any image → "Save Image As" → Choose format
 - Client-Side Image Converter: Your images never leave your browser. Zero data collection, zero uploads
-- Quality Control: Adjustable quality sliders for JPG, WebP, and AVIF formats (10-100%)
+- Quality Control: Adjustable quality sliders for JPG and WebP formats (10-100%)
 - Smart Filename: Keeps the original image filename, just changes the extension
 - Transparency Handling: Automatically adds white background when converting transparent images to JPG
-- Works Everywhere: Handles regular images, data URLs, blob URLs, and cross-origin images
+- Works Everywhere: Handles regular images, SVG, data URLs, blob URLs, and cross-origin images
 
 SUPPORTED IMAGE FORMATS:
 
 - PNG — Lossless quality with transparency support. Best for screenshots, graphics, and images with text
 - JPG/JPEG — Smaller file size with adjustable quality. Best for photos and web images
 - WebP — Modern format, 25-35% smaller than JPG at similar quality. Save WebP images or convert to WebP
-- AVIF — Next-generation format with the best compression ratio. Requires Chrome 110+
 
 HOW TO CONVERT AND SAVE IMAGES:
 
 1. Right-click any image on a webpage
 2. Select "Save Image As" from the context menu
-3. Choose your desired format (PNG, JPG, WebP, or AVIF)
+3. Choose your desired format (PNG, JPG, or WebP)
 4. Pick where to save — done!
 
-Tip: Click the extension icon to set default format and adjust quality for JPG, WebP, and AVIF.
+Tip: Click the extension icon to set default format and adjust quality for JPG and WebP.
 
 PERFECT FOR:
 
-- Converting WebP images to PNG or JPG for compatibility
-- Saving AVIF images in a standard format
+- Converting WebP or AVIF images to PNG or JPG for compatibility
 - Downloading images in the format you need without online converters
 - Quick image format conversion without Photoshop or other tools
 - Designers, developers, and content creators who need specific image formats

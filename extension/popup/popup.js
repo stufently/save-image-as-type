@@ -4,11 +4,10 @@ const DEFAULT_SETTINGS = {
   defaultFormat: 'png',
   jpgQuality: 92,
   webpQuality: 90,
-  avifQuality: 80,
 };
 
-const VALID_FORMATS = ['png', 'jpg', 'webp', 'avif'];
-const QUALITY_KEYS = ['jpgQuality', 'webpQuality', 'avifQuality'];
+const VALID_FORMATS = ['png', 'jpg', 'webp'];
+const QUALITY_KEYS = ['jpgQuality', 'webpQuality'];
 
 const elements = {};
 
@@ -18,8 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
   elements.jpgQualityValue = document.getElementById('jpgQualityValue');
   elements.webpQuality = document.getElementById('webpQuality');
   elements.webpQualityValue = document.getElementById('webpQualityValue');
-  elements.avifQuality = document.getElementById('avifQuality');
-  elements.avifQualityValue = document.getElementById('avifQualityValue');
   elements.status = document.getElementById('status');
 
   loadSettings();
@@ -68,7 +65,6 @@ function saveSettings() {
     defaultFormat: elements.defaultFormat.value,
     jpgQuality: parseInt(elements.jpgQuality.value, 10) || DEFAULT_SETTINGS.jpgQuality,
     webpQuality: parseInt(elements.webpQuality.value, 10) || DEFAULT_SETTINGS.webpQuality,
-    avifQuality: parseInt(elements.avifQuality.value, 10) || DEFAULT_SETTINGS.avifQuality,
   };
 
   if (!VALID_FORMATS.includes(settings.defaultFormat)) {

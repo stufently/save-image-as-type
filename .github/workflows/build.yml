@@ -8,30 +8,40 @@ permissions:
   contents: read
 
 jobs:
+  test:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-jammy
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Playwright library
+        run: npm install --no-save playwright@1.59.1
+
+      - name: Run extension smoke test
+        run: EXT_PATH="$PWD/extension" node tests/smoke-test.js
+
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    needs: test
     steps:
       - uses: actions/checkout@v7
 
       - name: Get version from manifest
         id: version
         run: |
-          VERSION=$(grep '"version"' extension/manifest.json | sed 's/.*"\([0-9.]*\)".*/\1/')
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          VERSION=$(jq -r .version extension/manifest.json)
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Build Chrome/Edge ZIP
+      # Single ZIP works for Chrome, Edge and Opera (extension name ≤50 chars)
+      - name: Build extension ZIP
         run: cd extension && zip -r ../save-image-as-type-${{ steps.version.outputs.VERSION }}.zip . -x '*.DS_Store' '*.git*'
 
-      - name: Build Opera ZIP
-        run: |
-          cp -r extension opera-build
-          sed -i 's/"message": "Save Image As PNG, JPG, WebP, AVIF — Image Converter"/"message": "Save Image As PNG, JPG, WebP, AVIF — Converter"/' opera-build/_locales/en/messages.json
-          cd opera-build && zip -r ../save-image-as-type-${{ steps.version.outputs.VERSION }}-opera.zip . -x '*.DS_Store' '*.git*'
-
-      - name: Upload artifacts
+      - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: extension-zips-${{ steps.version.outputs.VERSION }}
-          path: |
-            save-image-as-type-${{ steps.version.outputs.VERSION }}.zip
-            save-image-as-type-${{ steps.version.outputs.VERSION }}-opera.zip
+          name: extension-zip-${{ steps.version.outputs.VERSION }}
+          path: save-image-as-type-${{ steps.version.outputs.VERSION }}.zip
+          if-no-files-found: error

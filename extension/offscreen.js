@@ -59,10 +59,43 @@ function loadImageElement(blob) {
   });
 }
 
+// Rasterization size for SVG. Explicit width/height attributes win; an SVG
+// with only a viewBox gets the browser's 300x150 default, so scale the
+// viewBox to a 1024px longest side instead of rasterizing at that size.
+function svgRasterSize(arrayBuffer, img) {
+  const naturalWidth = img.naturalWidth || img.width;
+  const naturalHeight = img.naturalHeight || img.height;
+  try {
+    const text = new TextDecoder().decode(arrayBuffer);
+    const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+    const root = doc.documentElement;
+    // Percentage sizes (width="100%") are relative, not explicit — they get
+    // the browser's 300x150 default just like a missing attribute would.
+    const wAttr = root.getAttribute('width') || '';
+    const hAttr = root.getAttribute('height') || '';
+    const hasExplicitSize = wAttr !== '' && hAttr !== '' &&
+      !wAttr.includes('%') && !hAttr.includes('%');
+    const vb = root.viewBox?.baseVal;
+    if (!hasExplicitSize && vb && vb.width > 0 && vb.height > 0) {
+      const scale = 1024 / Math.max(vb.width, vb.height);
+      return {
+        width: Math.max(1, Math.round(vb.width * scale)),
+        height: Math.max(1, Math.round(vb.height * scale)),
+      };
+    }
+  } catch {
+    // Fall through to the intrinsic size
+  }
+  if (naturalWidth && naturalHeight) {
+    return { width: naturalWidth, height: naturalHeight };
+  }
+  return { width: 1024, height: 1024 };
+}
+
 // --- Message Handler ---
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.type !== 'convert-image') return false;
+  if (!message || message.type !== 'convert-image') return false;
 
   handleConversion(message)
     .then((result) => {
@@ -98,8 +131,7 @@ async function handleConversion(message) {
   if (isSvg) {
     // SVG: createImageBitmap doesn't support SVG blobs, use Image element
     const img = await loadImageElement(sourceBlob);
-    width = img.naturalWidth || img.width || 800;
-    height = img.naturalHeight || img.height || 600;
+    ({ width, height } = svgRasterSize(arrayBuffer, img));
     drawSource = img;
   } else {
     // Raster: try createImageBitmap, fall back to Image element
@@ -137,7 +169,9 @@ async function handleConversion(message) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  ctx.drawImage(drawSource, 0, 0);
+  // Explicit destination size: identity for rasters, scales SVGs that
+  // have no intrinsic size to the canvas dimensions.
+  ctx.drawImage(drawSource, 0, 0, width, height);
   if (drawSource.close) drawSource.close();
 
   // Convert to target format

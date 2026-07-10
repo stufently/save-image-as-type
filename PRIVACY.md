@@ -1,8 +1,8 @@
 # Privacy Policy
 
-**Save Image As PNG, JPG, WebP, AVIF — Image Converter**
+**Save Image As Type - PNG JPG WebP**
 
-Last updated: 2026-03-23
+Last updated: 2026-07-10
 
 ## Data Collection
 
@@ -19,9 +19,9 @@ This extension requests the following permissions solely for its core functional
 - **contextMenus** — to add right-click menu items on images
 - **downloads** — to save converted images to your device
 - **storage** — to remember your quality settings (synced via Chrome)
-- **activeTab** — to access the current tab for blob URL reading and error notifications
+- **notifications** — to show error messages when a conversion fails
 - **offscreen** — to create an offscreen document for Canvas API conversion
-- **scripting** — to inject scripts for reading blob URLs and showing error messages
+- **scripting** — to read blob: image URLs from the page that created them
 - **Host permissions (`<all_urls>`)** — to fetch images from any website you visit
 
 ## Third-Party Services

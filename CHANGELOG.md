@@ -1,9 +1,36 @@
 # Changelog
 
-## [Unreleased]
+## [1.2.0] - 2026-07-10
+
+### Removed
+- AVIF format (menu item, popup slider, locales, extension name, store description): Chrome's canvas.toBlob() cannot encode image/avif, so the option always failed with a misleading "update Chrome" error. AVIF images can still be opened/converted TO other formats
+
+### Fixed
+- Authorized images (cookie-protected CDNs, private albums): fetch now retries with credentials:'include' when the cookie-less request fails or returns a non-image response (e.g. an HTML login page with HTTP 200)
+- SVG with percentage width/height (width="100%") now scales from viewBox instead of the 300x150 browser default
+- Null-guards in all onMessage listeners (a malformed external message could throw TypeError)
+- Race condition: idle timer could close the offscreen document between ensureOffscreenDocument() and sendMessage — added closingOffscreen mutex and claim conversion slot before the ensure step
+- Filenames with leading dots (e.g. "..hidden.png") no longer rejected by downloads.download()
+- SVG without width/height attributes: rasterized at viewBox aspect ratio with 1024px longest side (was 300x150 browser default)
+
+### Improved
+- Download data URL is built directly from the offscreen base64 payload — removed a full decode + re-encode pass (lower memory on large images)
+- notifyError simplified to chrome.notifications only (removed dead alert-injection fallback)
+- README permissions table synced with manifest (stale activeTab entry removed)
+
+### Store assets
+- PRIVACY.md synced with manifest (name without AVIF, notifications instead of removed activeTab)
+- Store screenshots and promo images regenerated without AVIF (mockup/promo HTMLs + PNGs)
+
+### CI/CD
+- Chrome Web Store auto-publish on tag release (mnao305/chrome-extension-upload; gated on CWS_EXTENSION_ID repo variable + CWS_* secrets)
+- workflow_dispatch input to re-run a release for an existing tag
+- End-to-end smoke test (tests/smoke-test.js, Playwright + Chromium new headless) runs on every push to master
+- Version parsing via jq instead of grep/sed; pinned ubuntu-24.04 runners
+- Single ZIP for all stores — dropped the Opera-specific build (its sed had been silently no-oping since the 1.1.1 rename; new name fits all store limits)
 
 ### Changed
-- 2026-07-10: Full code review (self + Codex + Antigravity) — findings documented in TASKS.md: broken AVIF encoding (canvas.toBlob unsupported), triple base64 re-encoding memory overhead, credentials:'omit' blocking authorized images, stale activeTab in README, missing CWS auto-publish vs typio pipeline
+- 2026-07-10: Full code review (self + Codex + Antigravity) — findings documented in TASKS.md
 
 ## [1.1.5] - 2026-04-09
 

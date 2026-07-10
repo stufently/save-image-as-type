@@ -1,6 +1,8 @@
-# Save Image As PNG, JPG, WebP, AVIF — Image Converter
+# Save Image As PNG, JPG, WebP — Image Converter
 
-Chrome extension to save any image from the web as PNG, JPG, WebP, or AVIF. Fast client-side conversion via Canvas API — no uploads, no servers, 100% private.
+Chrome extension to save any image from the web as PNG, JPG, or WebP. Fast client-side conversion via Canvas API — no uploads, no servers, 100% private.
+
+> AVIF was removed in v1.2.0: Chrome's `canvas.toBlob()` cannot encode `image/avif`, so the option could never work client-side.
 
 ## Install
 
@@ -24,11 +26,10 @@ Coming soon to Chrome Web Store, Edge Add-ons, and Opera Add-ons.
 
 ## Features
 
-- Right-click context menu on any image: Save as PNG, JPG, WebP, AVIF
+- Right-click context menu on any image: Save as PNG, JPG, WebP
 - Client-side conversion via Canvas API (no server, no uploads)
-- Quality sliders for lossy formats (JPG, WebP, AVIF)
+- Quality sliders for lossy formats (JPG, WebP)
 - Smart transparency handling (white background for JPG)
-- AVIF support detection with fallback warning
 - Welcome page on first install
 - Manifest V3, minimal permissions
 - Open source
@@ -37,7 +38,7 @@ Coming soon to Chrome Web Store, Edge Add-ons, and Opera Add-ons.
 
 1. Right-click any image on a webpage
 2. Select **Save Image As** from the context menu
-3. Choose your format: PNG, JPG, WebP, or AVIF
+3. Choose your format: PNG, JPG, or WebP
 4. Pick where to save — done!
 
 **Tip:** Click the extension icon to adjust default format and quality settings.
@@ -49,7 +50,6 @@ Coming soon to Chrome Web Store, Edge Add-ons, and Opera Add-ons.
 | PNG | Lossless | Screenshots, graphics, transparency |
 | JPG | Lossy (adjustable) | Photos, smaller file size |
 | WebP | Lossy (adjustable) | Modern web, 25-35% smaller than JPG |
-| AVIF | Lossy (adjustable) | Maximum compression, Chrome 110+ |
 
 ## Architecture
 
@@ -75,9 +75,9 @@ extension/
 | `contextMenus` | Right-click menu items |
 | `downloads` | Save converted images |
 | `storage` | Remember quality settings |
-| `activeTab` | Access current tab for error notifications and blob: URLs |
+| `notifications` | Show conversion error messages |
 | `offscreen` | Create offscreen document for Canvas API conversion |
-| `scripting` | Inject error messages and read blob: URLs from pages |
+| `scripting` | Read blob: image URLs from the page that created them |
 | `<all_urls>` (host) | Fetch images from any domain (required for cross-origin image download) |
 
 Note: `<all_urls>` host permission is broad but necessary. The extension needs to download images from any website the user visits. No data is collected or sent anywhere.
@@ -95,11 +95,24 @@ git tag v1.0.1
 git push && git push --tags
 ```
 
-GitHub Actions will automatically build a ZIP and create a GitHub Release.
+GitHub Actions will automatically build a ZIP, create a GitHub Release, and — if Chrome Web Store credentials are configured — upload and publish the new version to CWS.
 
-### Publishing to Stores
+### Chrome Web Store auto-publish
 
-Download the ZIP from GitHub Releases and upload to each store:
+The `publish-chrome` job in `.github/workflows/release.yml` runs when the repository variable `CWS_EXTENSION_ID` is set. Required configuration (Settings → Secrets and variables → Actions):
+
+| Kind | Name | Value |
+|---|---|---|
+| Variable | `CWS_EXTENSION_ID` | Extension ID from the CWS dashboard URL |
+| Secret | `CWS_CLIENT_ID` | OAuth client ID (Google Cloud Console) |
+| Secret | `CWS_CLIENT_SECRET` | OAuth client secret |
+| Secret | `CWS_REFRESH_TOKEN` | OAuth refresh token with `chromewebstore` scope |
+
+See [Chrome Web Store API docs](https://developer.chrome.com/docs/webstore/using-api) for obtaining the OAuth credentials. The first submission must still go through the CWS dashboard UI; auto-publish handles updates.
+
+### Publishing to Other Stores
+
+Download the ZIP from GitHub Releases and upload manually:
 
 | Store | Dashboard | Cost |
 |---|---|---|

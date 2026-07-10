@@ -3,29 +3,36 @@
 ## Code review 2026-07-10 (self + Codex + agy)
 
 ### High priority
-- [ ] AVIF: `canvas.toBlob('image/avif')` не поддерживается Chrome — "Save as AVIF" всегда падает с ошибкой (offscreen.js:144-159). Убрать формат из меню (feature-detect при старте) или подключить WASM-энкодер; текст ошибки "update Chrome" вводит в заблуждение
-- [ ] Память: тройная base64-перекодировка (SW→offscreen→SW→data URL). Минимум: строить data URL напрямую из `message.data` (background.js:337, 364-374); лучше — возвращать из offscreen готовый `URL.createObjectURL` и скачивать по blob: ссылке
-- [ ] README: таблица permissions описывает `activeTab`, которого нет в manifest (удалён в 1.1.1) — рассинхрон с CWS justification
+- [x] AVIF убран полностью (v1.2.0): меню, попап, локали, имя расширения, welcome, README, store description — canvas.toBlob('image/avif') не поддерживается Chrome
+- [x] Память: data URL строится напрямую из base64 `message.data`, убраны decode+re-encode и downloadBlob (v1.2.0)
+- [x] README: таблица permissions синхронизирована с manifest (activeTab убран, notifications добавлен)
 
 ### Medium priority
-- [ ] `credentials: 'omit'` в fetchImage (background.js:162) — картинки за авторизацией не сохраняются; добавить fallback-фетч в контексте вкладки или 'include'
-- [ ] Race: idle-таймер может закрыть offscreen между ensureOffscreenDocument() и sendMessage → редкий "Failed to send conversion request"; нужен closing-mutex
-- [ ] 100MP-лимит проверяется после декода (offscreen.js:122) — decode bomb уже съел память; проверять размеры до полного декода где возможно
-- [ ] SVG без width/height рендерится 800x600 с искажением пропорций (offscreen.js:101) — парсить viewBox
-- [ ] buildFilename пропускает ведущие точки (`..hidden`) → downloads.download может отклонить имя
-- [ ] Закоммитить Playwright-тесты из сессии 2026-04-09 и гонять их в CI
+- [x] fetchImage: fallback-повтор с `credentials: 'include'` при неуспешном первом запросе (v1.2.0)
+- [x] Race: closing-mutex (`closingOffscreen`) + activeConversions++ до ensureOffscreenDocument (v1.2.0)
+- [ ] 100MP-лимит проверяется после декода (offscreen.js) — decode bomb уже съел память; проверять размеры до полного декода где возможно
+- [x] SVG: размер из viewBox (длинная сторона 1024) при отсутствии явных width/height, явный масштаб в drawImage (v1.2.0)
+- [x] buildFilename: ведущие точки срезаются (v1.2.0)
+- [x] Смоук-тест tests/smoke-test.js (Playwright + Chromium new headless) + job test в build.yml (v1.2.0)
 
 ### CI/CD (по образцу typio-chrome-form-recovery-ng)
-- [ ] Автопубликация в Chrome Web Store: job publish-chrome с mnao305/chrome-extension-upload@v6.0.0 (vars.CWS_EXTENSION_ID + secrets CWS_CLIENT_ID/SECRET/REFRESH_TOKEN)
-- [ ] workflow_dispatch с input tag для ручного перезапуска релиза
-- [ ] Версия из манифеста через `jq -r .version` вместо grep/sed; `set -euo pipefail`
-- [ ] Opera-шаг: проверять что sed реально заменил строку (иначе имя >50 символов уедет молча)
-- [ ] ubuntu-24.04 вместо ubuntu-latest; опционально пин actions по SHA
+- [x] Автопубликация в Chrome Web Store: job publish-chrome с mnao305/chrome-extension-upload@v6.0.0 — требует настроить vars.CWS_EXTENSION_ID + secrets CWS_CLIENT_ID/SECRET/REFRESH_TOKEN в репо
+- [x] workflow_dispatch с input tag для ручного перезапуска релиза
+- [x] Версия через `jq -r .version`; `set -euo pipefail`
+- [x] Opera-шаг удалён: после укорачивания имени (≤45) один ZIP подходит всем сторам (sed давно молча не срабатывал — имя в манифесте изменилось ещё в 1.1.1)
+- [x] ubuntu-24.04 вместо ubuntu-latest
+- [ ] Опционально: пин actions по SHA
 
 ### Low priority
 - [ ] Локализовать popup (строки захардкожены по-английски при 7 языках в _locales)
 - [ ] Настройка saveAs (диалог/тихое сохранение)
-- [ ] Убрать fallback alert-инъекцию в notifyError (notifications всегда доступны — мёртвый код)
+- [x] Убран fallback alert-инъекция в notifyError (v1.2.0)
+- [ ] Blob URL из offscreen вместо data URL для скачивания (ещё меньше памяти; требует аккуратного lifecycle)
+
+### После v1.2.0 (осталось пользователю)
+- [ ] Задать в GitHub repo: variable `CWS_EXTENSION_ID`, secrets `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` (см. README "Chrome Web Store auto-publish")
+- [ ] Запушить тег `v1.2.0` → релиз + автопубликация в CWS
+- [ ] Обновить скриншоты в CWS/Edge/Opera дашбордах (store/screenshots перегенерированы без AVIF)
 
 ## Before Chrome Web Store Publication
 

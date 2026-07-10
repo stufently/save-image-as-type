@@ -5,7 +5,7 @@
 1. Go to [CWS Developer Dashboard](https://chrome.google.com/webstore/devconsole)
 2. Click **New Item** → Upload `save-image-as-type-1.0.0.zip` from [GitHub Releases](https://github.com/stufently/save-image-as-type/releases)
 3. Fill in the listing:
-   - **Name**: auto-filled from manifest (`Save Image As PNG, JPG, WebP, AVIF — Image Converter`)
+   - **Name**: auto-filled from manifest (`Save Image As Type - PNG JPG WebP`)
    - **Description**: copy from `store/description.txt`
    - **Category**: Photos (or Productivity)
    - **Language**: English (localized descriptions auto-applied from `_locales/`)
@@ -36,18 +36,17 @@
 4. Fill in listing
 5. Submit for review (2-10 days)
 
-## Updating (All Stores)
+## Updating
 
-1. Update version in `extension/manifest.json` (e.g., `1.0.0` → `1.0.1`)
-2. Commit: `git commit -am "Bump version to 1.0.1"`
+1. Update version in `extension/manifest.json` (e.g., `1.2.0` → `1.2.1`)
+2. Commit: `git commit -am "Bump version to 1.2.1"`
 3. Tag and push:
    ```bash
-   git tag v1.0.1
+   git tag v1.2.1
    git push && git push --tags
    ```
-4. GitHub Actions builds ZIP and creates Release automatically
-5. Download ZIP from [Releases](https://github.com/stufently/save-image-as-type/releases)
-6. Upload new ZIP to each store dashboard
+4. GitHub Actions builds the ZIP, creates the Release, and **publishes to Chrome Web Store automatically** (job `publish-chrome` in `release.yml`; requires repo variable `CWS_EXTENSION_ID` + secrets `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` — see README "Chrome Web Store auto-publish")
+5. Edge and Opera: download the ZIP from [Releases](https://github.com/stufently/save-image-as-type/releases) and upload manually (one ZIP fits all stores)
 
 ## Re-generating Screenshots
 

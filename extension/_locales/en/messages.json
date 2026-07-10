@@ -1,10 +1,10 @@
 {
   "extName": {
-    "message": "Save Image As Type - PNG JPG WebP AVIF",
+    "message": "Save Image As Type - PNG JPG WebP",
     "description": "Extension name (max 45 chars for CWS)"
   },
   "extDescription": {
-    "message": "Right-click any image to save as PNG, JPG, WebP, or AVIF. Fast client-side format converter. No uploads, 100% private.",
+    "message": "Right-click any image to save as PNG, JPG, or WebP. Fast client-side format converter. No uploads, 100% private.",
     "description": "Extension description for Chrome Web Store"
   },
   "menuSaveImageAs": {
@@ -22,10 +22,6 @@
   "menuSaveAsWebp": {
     "message": "Save as WebP",
     "description": "Context menu item for WebP"
-  },
-  "menuSaveAsAvif": {
-    "message": "Save as AVIF",
-    "description": "Context menu item for AVIF"
   },
   "menuSaveAsDefault": {
     "message": "Save as default format",

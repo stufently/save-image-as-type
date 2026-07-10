@@ -1,10 +1,10 @@
 {
   "extName": {
-    "message": "画像変換 - PNG JPG WebP AVIF保存",
+    "message": "画像変換 - PNG JPG WebP保存",
     "description": "Extension name (max 45 chars for CWS)"
   },
   "extDescription": {
-    "message": "画像を右クリックしてPNG、JPG、WebP、AVIFで保存。高速なローカル変換、アップロード不要、完全プライベート。",
+    "message": "画像を右クリックしてPNG、JPG、WebPで保存。高速なローカル変換、アップロード不要、完全プライベート。",
     "description": "Extension description for Chrome Web Store"
   },
   "menuSaveImageAs": {
@@ -22,10 +22,6 @@
   "menuSaveAsWebp": {
     "message": "WebPで保存",
     "description": "Context menu item for WebP"
-  },
-  "menuSaveAsAvif": {
-    "message": "AVIFで保存",
-    "description": "Context menu item for AVIF"
   },
   "menuSaveAsDefault": {
     "message": "デフォルト形式で保存",

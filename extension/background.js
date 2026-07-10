@@ -1,18 +1,18 @@
 // Save Image As Type — Background Service Worker
 // Handles context menus, image fetching, conversion via OffscreenDocument, and downloads.
 
+// AVIF is intentionally absent: Chrome's canvas.toBlob() cannot encode
+// image/avif, so the option would always fail at conversion time.
 const FORMATS = [
   { id: 'png', title: chrome.i18n.getMessage('menuSaveAsPng') || 'Save as PNG', mime: 'image/png', ext: 'png' },
   { id: 'jpg', title: chrome.i18n.getMessage('menuSaveAsJpg') || 'Save as JPG', mime: 'image/jpeg', ext: 'jpg' },
   { id: 'webp', title: chrome.i18n.getMessage('menuSaveAsWebp') || 'Save as WebP', mime: 'image/webp', ext: 'webp' },
-  { id: 'avif', title: chrome.i18n.getMessage('menuSaveAsAvif') || 'Save as AVIF', mime: 'image/avif', ext: 'avif' },
 ];
 
 const DEFAULT_SETTINGS = {
   defaultFormat: 'png',
   jpgQuality: 92,
   webpQuality: 90,
-  avifQuality: 80,
 };
 
 // --- Base64 Helpers for Message Passing ---
@@ -27,15 +27,6 @@ function arrayBufferToBase64(buffer) {
     binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
   }
   return btoa(binary);
-}
-
-function base64ToArrayBuffer(base64) {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes.buffer;
 }
 
 // --- Context Menu Setup ---
@@ -83,16 +74,16 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const menuId = info.menuItemId;
   let formatId;
 
+  let format;
   if (menuId === 'save-as-default') {
     const settings = await getSettings();
     formatId = settings.defaultFormat;
+    // Fall back to PNG if the stored default is no longer offered (e.g. 'avif')
+    format = FORMATS.find(f => f.id === formatId) || FORMATS[0];
   } else if (menuId.startsWith('save-as-')) {
     formatId = menuId.replace('save-as-', '');
-  } else {
-    return;
+    format = FORMATS.find(f => f.id === formatId);
   }
-
-  const format = FORMATS.find(f => f.id === formatId);
   if (!format) return;
 
   const srcUrl = info.srcUrl;
@@ -100,20 +91,24 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
   try {
     const settings = await getSettings();
-    const quality = getQualityForFormat(formatId, settings);
+    const quality = getQualityForFormat(format.id, settings);
     const imageBlob = await fetchImage(srcUrl, tab?.id);
-    const convertedBlob = await convertImage(imageBlob, format.mime, quality);
+    const dataUrl = await convertImage(imageBlob, format.mime, quality);
 
-    if (!convertedBlob) {
-      notifyError(tab?.id, `Conversion to ${format.ext.toUpperCase()} failed. Your browser may not support this format.`);
+    if (!dataUrl) {
+      notifyError(`Conversion to ${format.ext.toUpperCase()} failed. Your browser may not support this format.`);
       return;
     }
 
     const filename = buildFilename(srcUrl, format.ext);
-    await downloadBlob(convertedBlob, filename);
+    await chrome.downloads.download({
+      url: dataUrl,
+      filename: filename,
+      saveAs: true,
+    });
   } catch (err) {
     console.error('Save Image As Type error:', err);
-    notifyError(tab?.id, `Failed to save image: ${err.message || 'Unknown error'}`);
+    notifyError(`Failed to save image: ${err.message || 'Unknown error'}`);
   }
 });
 
@@ -139,7 +134,6 @@ function getQualityForFormat(formatId, settings) {
   switch (formatId) {
     case 'jpg': raw = settings.jpgQuality; fallback = DEFAULT_SETTINGS.jpgQuality; break;
     case 'webp': raw = settings.webpQuality; fallback = DEFAULT_SETTINGS.webpQuality; break;
-    case 'avif': raw = settings.avifQuality; fallback = DEFAULT_SETTINGS.avifQuality; break;
     default: return undefined; // PNG is lossless
   }
   const val = Number(raw);
@@ -159,16 +153,36 @@ async function fetchImage(url, tabId) {
     return await fetchBlobFromTab(url, tabId);
   }
 
-  const response = await fetch(url, {
+  // Try cookie-less first (privacy-friendly); some images sit behind
+  // auth (CDNs with signed cookies, private albums) and need credentials.
+  // Auth walls may also answer 200 with an HTML login page, so a non-image
+  // Content-Type triggers the retry too.
+  let response = await fetch(url, {
     mode: 'cors',
     credentials: 'omit',
   });
+
+  if (!response.ok || !looksLikeImageResponse(response)) {
+    const retry = await fetch(url, {
+      mode: 'cors',
+      credentials: 'include',
+    });
+    if (retry.ok) response = retry;
+  }
 
   if (!response.ok) {
     throw new Error(`HTTP ${response.status} fetching image`);
   }
 
   return await response.blob();
+}
+
+function looksLikeImageResponse(response) {
+  const contentType = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  // Empty and octet-stream are common for misconfigured image CDNs — accept them
+  return contentType === '' ||
+    contentType.startsWith('image/') ||
+    contentType === 'application/octet-stream';
 }
 
 // Fetch blob: URLs by injecting a content script that reads the blob
@@ -212,9 +226,16 @@ async function fetchBlobFromTab(blobUrl, tabId) {
 // --- Image Conversion using OffscreenDocument ---
 
 let creatingOffscreen = null;
+let closingOffscreen = null; // pending closeDocument() — new conversions must wait for it
 let activeConversions = 0; // R2 Fix #2: track active conversions to prevent idle close during work
 
 async function ensureOffscreenDocument() {
+  // If the idle timer is mid-close, wait it out — otherwise getContexts()
+  // can report a document that is gone by the time we sendMessage.
+  if (closingOffscreen) {
+    try { await closingOffscreen; } catch (e) { /* ignore */ }
+  }
+
   try {
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: ['OFFSCREEN_DOCUMENT'],
@@ -230,7 +251,7 @@ async function ensureOffscreenDocument() {
     // Set up listener for the ready signal BEFORE creating the document
     const readyPromise = new Promise((resolve) => {
       const onReady = (message) => {
-        if (message.type === 'offscreen-ready') {
+        if (message && message.type === 'offscreen-ready') {
           chrome.runtime.onMessage.removeListener(onReady);
           resolve();
         }
@@ -269,31 +290,43 @@ function resetOffscreenIdleTimer() {
   if (offscreenIdleTimer) clearTimeout(offscreenIdleTimer);
   // Don't schedule close if conversions are still in progress
   if (activeConversions > 0) return;
-  offscreenIdleTimer = setTimeout(async () => {
+  offscreenIdleTimer = setTimeout(() => {
     offscreenIdleTimer = null;
     // Double-check no conversions started while timer was pending
     if (activeConversions > 0) return;
-    try {
-      const contexts = await chrome.runtime.getContexts({
-        contextTypes: ['OFFSCREEN_DOCUMENT'],
-      });
-      if (contexts.length > 0) {
-        await chrome.offscreen.closeDocument();
+    closingOffscreen = (async () => {
+      try {
+        const contexts = await chrome.runtime.getContexts({
+          contextTypes: ['OFFSCREEN_DOCUMENT'],
+        });
+        if (contexts.length > 0) {
+          await chrome.offscreen.closeDocument();
+        }
+      } catch (e) {
+        // Already closed or not available
       }
-    } catch (e) {
-      // Already closed or not available
-    }
+    })().finally(() => {
+      closingOffscreen = null;
+    });
   }, 30000);
 }
 
 async function convertImage(blob, targetMime, quality) {
-  await ensureOffscreenDocument();
-  // Cancel idle timer while conversion is active
+  // Claim the conversion slot and cancel the idle timer BEFORE the async
+  // ensure step, so the timer can't close the document underneath us.
   if (offscreenIdleTimer) {
     clearTimeout(offscreenIdleTimer);
     offscreenIdleTimer = null;
   }
   activeConversions++;
+
+  try {
+    await ensureOffscreenDocument();
+  } catch (err) {
+    activeConversions--;
+    resetOffscreenIdleTimer();
+    throw err;
+  }
 
   // R3 Fix #1: wrap arrayBuffer in try/catch so activeConversions is always decremented
   let arrayBuffer;
@@ -325,7 +358,7 @@ async function convertImage(blob, targetMime, quality) {
     }, 30000);
 
     const listener = (message) => {
-      if (message.type !== 'conversion-result' || message.id !== messageId) return;
+      if (!message || message.type !== 'conversion-result' || message.id !== messageId) return;
       cleanup();
 
       if (message.error) {
@@ -334,9 +367,9 @@ async function convertImage(blob, targetMime, quality) {
       }
 
       if (message.data) {
-        const resultBuffer = base64ToArrayBuffer(message.data);
-        const resultBlob = new Blob([resultBuffer], { type: targetMime });
-        resolve(resultBlob);
+        // message.data is already base64 — build the download data URL
+        // directly instead of decoding and re-encoding the whole payload
+        resolve(`data:${targetMime};base64,${message.data}`);
       } else {
         resolve(null);
       }
@@ -355,21 +388,6 @@ async function convertImage(blob, targetMime, quality) {
       cleanup();
       reject(new Error('Failed to send conversion request: ' + err.message));
     });
-  });
-}
-
-// --- Download ---
-
-// Download converted blob using data URL (URL.createObjectURL is not available in service workers)
-async function downloadBlob(blob, filename) {
-  const arrayBuffer = await blob.arrayBuffer();
-  const base64 = arrayBufferToBase64(arrayBuffer);
-  const dataUrl = `data:${blob.type};base64,${base64}`;
-
-  await chrome.downloads.download({
-    url: dataUrl,
-    filename: filename,
-    saveAs: true,
   });
 }
 
@@ -393,6 +411,8 @@ function buildFilename(srcUrl, ext) {
       name = dotIndex > 0 ? lastPart.substring(0, dotIndex) : lastPart;
       // R2 Fix #9: clean up redundant \w, use explicit _ for underscore
       name = name.replace(/[^\p{L}\p{N}_\-\.]/gu, '_').replace(/_+/g, '_');
+      // Leading dots make downloads.download() reject the filename
+      name = name.replace(/^\.+/, '');
       if (name.length > 100) name = name.substring(0, 100);
       if (!name) name = 'image';
     }
@@ -405,29 +425,11 @@ function buildFilename(srcUrl, ext) {
 
 // --- Error Notification ---
 
-function notifyError(tabId, message) {
-  if (chrome.notifications) {
-    chrome.notifications.create({
-      type: 'basic',
-      iconUrl: 'icons/icon128.png',
-      title: 'Save Image As Type',
-      message: message,
-    });
-    return;
-  }
-
-  if (!tabId) {
-    console.warn('Save Image As Type error (no tab):', message);
-    return;
-  }
-
-  chrome.scripting.executeScript({
-    target: { tabId: tabId },
-    func: (msg) => {
-      alert(`Save Image As Type: ${msg}`);
-    },
-    args: [message],
-  }).catch(() => {
-    console.warn('Could not show error notification to user:', message);
+function notifyError(message) {
+  chrome.notifications.create({
+    type: 'basic',
+    iconUrl: 'icons/icon128.png',
+    title: 'Save Image As Type',
+    message: message,
   });
 }

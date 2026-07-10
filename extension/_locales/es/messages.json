@@ -1,10 +1,10 @@
 {
   "extName": {
-    "message": "Guardar Imagen - PNG JPG WebP AVIF",
+    "message": "Guardar Imagen - PNG JPG WebP",
     "description": "Extension name (max 45 chars for CWS)"
   },
   "extDescription": {
-    "message": "Clic derecho en cualquier imagen para guardarla como PNG, JPG, WebP o AVIF. Conversión local rápida, sin subir archivos.",
+    "message": "Clic derecho en cualquier imagen para guardarla como PNG, JPG o WebP. Conversión local rápida, sin subir archivos.",
     "description": "Extension description for Chrome Web Store"
   },
   "menuSaveImageAs": {
@@ -22,10 +22,6 @@
   "menuSaveAsWebp": {
     "message": "Guardar como WebP",
     "description": "Context menu item for WebP"
-  },
-  "menuSaveAsAvif": {
-    "message": "Guardar como AVIF",
-    "description": "Context menu item for AVIF"
   },
   "menuSaveAsDefault": {
     "message": "Guardar en formato predeterminado",
