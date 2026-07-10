@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+- 2026-07-10: Full code review (self + Codex + Antigravity) — findings documented in TASKS.md: broken AVIF encoding (canvas.toBlob unsupported), triple base64 re-encoding memory overhead, credentials:'omit' blocking authorized images, stale activeTab in README, missing CWS auto-publish vs typio pipeline
+
 ## [1.1.5] - 2026-04-09
 
 ### Fixed
