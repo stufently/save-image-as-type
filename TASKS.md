@@ -29,10 +29,11 @@
 - [x] Убран fallback alert-инъекция в notifyError (v1.2.0)
 - [ ] Blob URL из offscreen вместо data URL для скачивания (ещё меньше памяти; требует аккуратного lifecycle)
 
-### После v1.2.0 (осталось пользователю)
-- [ ] Задать в GitHub repo: variable `CWS_EXTENSION_ID`, secrets `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` (см. README "Chrome Web Store auto-publish")
-- [ ] Запушить тег `v1.2.0` → релиз + автопубликация в CWS
-- [ ] Обновить скриншоты в CWS/Edge/Opera дашбордах (store/screenshots перегенерированы без AVIF)
+### После v1.2.0
+- [x] Секреты CWS_* + variable CWS_EXTENSION_ID (bbahljpklphbjnapiehkkijjofgceenm) заданы (2026-07-11)
+- [x] Тег v1.2.0 → Release + автопубликация в CWS: оба job'а success — автодеплой работает (2026-07-11)
+- [ ] Заменить скриншоты листинга в дашборде CWS руками (store/screenshots перегенерированы без AVIF; дашборд не автоматизируется)
+- [ ] Edge/Opera: расширение там не опубликовано — при желании первая публикация руками из того же ZIP
 
 ## Before Chrome Web Store Publication
 

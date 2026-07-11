@@ -1,12 +1,11 @@
 # Current Session Tasks — 2026-07-11
 
 ## CWS auto-deploy: финальная настройка + релиз v1.2.0
-- **Status**: IN_PROGRESS
-- Секреты CWS_CLIENT_ID/SECRET/REFRESH_TOKEN заданы пользователем (клиент «Save Image As CWS C»)
-- Расширение ОКАЗАЛОСЬ опубликованным в CWS: ID bbahljpklphbjnapiehkkijjofgceenm,
-  листинг save-image-as-type-png-jp, текущая версия в сторе 1.1.5
-- Variable CWS_EXTENSION_ID задана
-- Далее: tag v1.2.0 → GitHub Release → автопубликация в CWS
-
-## Предыдущее (2026-07-10): COMPLETED
-- Полное ревью (self + Codex + agy), фиксы v1.2.0, смоук-тест, CI — см. TASKS.md/CHANGELOG.md
+- **Status**: COMPLETED
+- Секреты CWS_* заданы пользователем (OAuth-клиент «Save Image As CWS C»)
+- Extension ID найден без дашборда (обход consent-стены chromewebstore + related-ссылки):
+  bbahljpklphbjnapiehkkijjofgceenm — расширение оказалось уже опубликованным (v1.1.5, рейтинг 5.0)
+- Variable CWS_EXTENSION_ID задана, тег v1.2.0 запушен
+- Release workflow: build ✅, Publish to Chrome Web Store ✅ — v1.2.0 загружена и отправлена
+  на публикацию в CWS автоматически (первая сработка автодеплоя)
+- Осталось руками: заменить скриншоты листинга в дашборде CWS (store/screenshots/, без AVIF)

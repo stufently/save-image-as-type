@@ -1,6 +1,8 @@
 # Changelog
 
-## [1.2.0] - 2026-07-10
+## [1.2.0] - 2026-07-10 (released 2026-07-11)
+
+> Released via the new auto-publish pipeline: tag v1.2.0 → GitHub Release → Chrome Web Store upload+publish (extension ID bbahljpklphbjnapiehkkijjofgceenm). First successful automated CWS deployment.
 
 ### Removed
 - AVIF format (menu item, popup slider, locales, extension name, store description): Chrome's canvas.toBlob() cannot encode image/avif, so the option always failed with a misleading "update Chrome" error. AVIF images can still be opened/converted TO other formats
