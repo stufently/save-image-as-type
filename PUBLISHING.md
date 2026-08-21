@@ -1,6 +1,11 @@
 # Publishing Flow
 
-## Chrome Web Store (First Publication)
+> **Status:** Chrome Web Store — **published** (extension ID `bbahljpklphbjnapiehkkijjofgceenm`,
+> [listing](https://chromewebstore.google.com/detail/save-image-as-type-png-jp/bbahljpklphbjnapiehkkijjofgceenm)).
+> Updates go out automatically on tag — see "Updating" below. Edge Add-ons and Opera
+> Add-ons — **not published**; their first-publication steps below are still to do.
+
+## Chrome Web Store (First Publication — already done, kept for reference)
 
 1. Go to [CWS Developer Dashboard](https://chrome.google.com/webstore/devconsole)
 2. Click **New Item** → Upload `save-image-as-type-1.0.0.zip` from [GitHub Releases](https://github.com/stufently/save-image-as-type/releases)

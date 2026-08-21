@@ -6,33 +6,52 @@ Chrome extension to save any image from the web as PNG, JPG, or WebP. Fast clien
 
 ## Install
 
-### From Stores
+### Chrome Web Store
 
-<!-- TODO: uncomment when published
-- [Chrome Web Store](https://chrome.google.com/webstore/detail/TODO)
-- [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/TODO)
-- [Opera Add-ons](https://addons.opera.com/extensions/details/TODO)
--->
+**[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/save-image-as-type-png-jp/bbahljpklphbjnapiehkkijjofgceenm)**
 
-Coming soon to Chrome Web Store, Edge Add-ons, and Opera Add-ons.
+**Edge Add-ons / Opera Add-ons** — not published there yet. The extension is Manifest V3
+and the same ZIP works in both browsers, so until then use the manual install below.
 
-### Developer Mode
+### Manual install (any Chromium browser)
 
-1. Clone this repo or download a [release ZIP](https://github.com/stufently/save-image-as-type/releases)
-2. Open `chrome://extensions/`
-3. Enable "Developer mode" (top right)
-4. Click "Load unpacked"
-5. Select the `extension/` folder
+1. Download the latest `save-image-as-type-<version>.zip` from
+   [Releases](https://github.com/stufently/save-image-as-type/releases), or clone this repo
+2. Unzip it
+3. Open `chrome://extensions/`
+4. Enable **Developer mode** (top right)
+5. Click **Load unpacked**
+6. Select the unzipped folder — or, if you cloned the repo, the `extension/` folder
+
+Manually installed extensions do not auto-update; repeat the steps to upgrade.
 
 ## Features
 
-- Right-click context menu on any image: Save as PNG, JPG, WebP
+- Right-click context menu on any image: Save as PNG, JPG, WebP — plus a
+  **Save as default format** item that skips the format submenu
 - Client-side conversion via Canvas API (no server, no uploads)
-- Quality sliders for lossy formats (JPG, WebP)
+- Quality sliders for lossy formats (JPG, WebP); PNG is always lossless
 - Smart transparency handling (white background for JPG)
+- Works on SVG, `data:` URLs, `blob:` URLs, cross-origin and cookie-protected images
+- Keeps the original filename and swaps only the extension
+- Always opens the "Save As" dialog, so you choose the destination
+- Refuses to silently save the wrong format: if the encoder falls back, you get an error
+- 100-megapixel guard against memory-exhausting images
 - Welcome page on first install
 - Manifest V3, minimal permissions
 - Open source
+
+## Interface
+
+The extension adds one submenu to the image right-click menu — there is no other UI to learn:
+
+![Right-click menu with Save Image As submenu offering PNG, JPG, WebP and the default format](store/screenshots/mockup1.png)
+
+Clicking the toolbar icon opens a small settings popup: a **Default format** dropdown
+(used by the "Save as default format" menu item) and **JPG quality** / **WebP quality**
+sliders. PNG has no slider because it is lossless.
+
+![Settings popup with a default format dropdown and JPG and WebP quality sliders](store/screenshots/mockup2.png)
 
 ## How to Use
 
@@ -50,6 +69,27 @@ Coming soon to Chrome Web Store, Edge Add-ons, and Opera Add-ons.
 | PNG | Lossless | Screenshots, graphics, transparency |
 | JPG | Lossy (adjustable) | Photos, smaller file size |
 | WebP | Lossy (adjustable) | Modern web, 25-35% smaller than JPG |
+
+## Why This Extension
+
+Image-format converters are a crowded category, and most of them either upload your image
+to a server or have gone unmaintained. This one is deliberately narrow:
+
+- **Conversion never leaves the machine.** The image is decoded and re-encoded with the
+  browser's own Canvas API. There is no backend, no upload endpoint, no analytics, and no
+  account. See [Privacy](#privacy).
+- **Manifest V3.** Works under Chrome's current extension platform rather than the retired
+  MV2 one.
+- **Only formats that actually work.** AVIF was removed in v1.2.0 once it was confirmed
+  that `canvas.toBlob()` cannot encode `image/avif` — shipping the option would mean a
+  menu item that always fails.
+- **Handles the awkward sources**, not just plain `<img>` tags: SVG (including
+  `width="100%"` and viewBox-only files), `data:` URLs, `blob:` URLs, cross-origin images,
+  and cookie-protected images behind a login.
+- **Open source, MIT.** Every line that touches your images is in this repo, and releases
+  are built by CI from a tag rather than uploaded by hand.
+- **Localized** into 7 languages — extension name, store description, and the context menu
+  items you actually click. (The settings popup and error messages are still English-only.)
 
 ## Architecture
 
@@ -80,7 +120,10 @@ extension/
 | `scripting` | Read blob: image URLs from the page that created them |
 | `<all_urls>` (host) | Fetch images from any domain (required for cross-origin image download) |
 
-Note: `<all_urls>` host permission is broad but necessary. The extension needs to download images from any website the user visits. No data is collected or sent anywhere.
+Note: `<all_urls>` host permission is broad but necessary — the extension has to fetch the
+image you right-clicked, and that image can live on any domain. `scripting` is used on one
+narrow path only: reading a `blob:` image URL from the page that created it. Every declared
+permission is actually used; none is reserved "for later".
 
 ## Release & Publishing
 
@@ -95,7 +138,9 @@ git tag v1.0.1
 git push && git push --tags
 ```
 
-GitHub Actions will automatically build a ZIP, create a GitHub Release, and — if Chrome Web Store credentials are configured — upload and publish the new version to CWS.
+GitHub Actions will automatically build a ZIP, create a GitHub Release, and upload and publish
+the new version to the Chrome Web Store. The CWS credentials are already configured in this
+repository — the pipeline has been shipping releases this way since v1.2.0.
 
 ### Chrome Web Store auto-publish
 
@@ -130,7 +175,9 @@ The same ZIP works for all three stores (Manifest V3 compatible).
 
 ## Localization
 
-Store listing (name + description) is localized in `extension/_locales/`:
+Extension name, store description, and context-menu items are localized in
+`extension/_locales/`. The settings popup, the welcome page, and error notifications are
+currently hardcoded English.
 
 | Language | Code |
 |---|---|
@@ -144,7 +191,25 @@ Store listing (name + description) is localized in `extension/_locales/`:
 
 ## Privacy
 
-This extension does not collect, store, or transmit any data. All image conversion happens locally in your browser. See [PRIVACY.md](PRIVACY.md) for details.
+**Your images are never uploaded.** Conversion runs on the browser's own Canvas API inside an
+offscreen document: the image is decoded, drawn to a canvas, re-encoded with `toBlob()`, and
+handed to `chrome.downloads`. There is no backend, no upload endpoint, no analytics, no
+tracking, no account, and no remote code — the extension loads no external scripts, styles,
+or fonts.
+
+Two details stated plainly, because "collects nothing" deserves the fine print:
+
+- **Fetching the image contacts its own host.** To convert an image the extension downloads
+  it first, exactly like the browser did when it displayed it. If that request fails or
+  comes back as non-image content (a login page), it retries once with credentials, so
+  cookies you already have for *that host* are sent to *that host*. Nothing goes anywhere
+  else.
+- **Settings use `chrome.storage.sync`.** Your default format and the two quality numbers
+  ride Chrome's own sync to your other signed-in Chrome devices. That is three values —
+  `defaultFormat`, `jpgQuality`, `webpQuality` — and nothing about which images you saved,
+  which sites you visited, or who you are.
+
+See [PRIVACY.md](PRIVACY.md) for the full policy.
 
 ## License
 

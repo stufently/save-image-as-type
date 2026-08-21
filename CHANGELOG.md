@@ -1,5 +1,36 @@
 # Changelog
 
+## [Unreleased]
+
+### Documentation (2026-08-21)
+
+- README install section rewritten: the commented-out `detail/TODO` placeholder links and the
+  stale "Coming soon to Chrome Web Store" line are gone. The extension has been live on the
+  Chrome Web Store since v1.1.5 (ID `bbahljpklphbjnapiehkkijjofgceenm`), so the README now
+  links the real listing, states plainly that Edge and Opera are not published yet, and gives
+  full manual-install steps (download release ZIP → `chrome://extensions` → Developer mode →
+  Load unpacked) with a note that manual installs do not auto-update
+- README: added "Interface" section embedding the existing `store/screenshots` images of the
+  context menu and the settings popup, and a "Why This Extension" section (local Canvas
+  conversion, MV3, no fake AVIF option, awkward-source handling, MIT, 7 locales)
+- README features list synced with the code: the "Save as default format" menu item, SVG /
+  `data:` / `blob:` / cross-origin / cookie-protected image support, forced "Save As" dialog,
+  encoder-fallback detection, and the 100-megapixel guard were all implemented but undocumented
+- README + PRIVACY.md privacy claims made precise instead of absolute. "Transmits no data"
+  now spells out the only two flows that leave the device — fetching the image from its own
+  host (with a credentialed retry for login-walled images) and `chrome.storage.sync`
+  replicating the three settings values through the user's own Google account. No image is
+  uploaded and the developer still receives nothing
+- README permissions note: documents that `scripting` is used only to read `blob:` URLs and
+  that no declared permission is unused
+- README localization claim corrected: only the extension name, store description, and context
+  menu items are translated — the settings popup, welcome page, and error notifications are
+  hardcoded English, which the README previously implied were localized too
+- README release section: CWS auto-publish is described as configured and in use rather than
+  conditional on credentials that "might" be set
+- PUBLISHING.md: status banner clarifying that Chrome is already published and auto-updates on
+  tag, while the Edge and Opera first-publication steps remain outstanding
+
 ## [1.2.0] - 2026-07-10 (released 2026-07-11)
 
 > Released via the new auto-publish pipeline: tag v1.2.0 → GitHub Release → Chrome Web Store upload+publish (extension ID bbahljpklphbjnapiehkkijjofgceenm). First successful automated CWS deployment.
