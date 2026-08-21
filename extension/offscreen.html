@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html>
-<head><title>Image Converter (Offscreen)</title></head>
+<head>
+  <!-- Without this the document defaults to windows-1252 and offscreen.js is
+       decoded as such, mangling every non-ASCII literal in it (the "×" in the
+       scaled-down notice came out as "Ã—"). popup.html and welcome.html
+       already declare it. -->
+  <meta charset="UTF-8">
+  <title>Image Converter (Offscreen)</title>
+</head>
 <body>
 <script src="offscreen.js"></script>
 </body>

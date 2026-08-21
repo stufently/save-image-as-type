@@ -179,6 +179,10 @@
     "message": "Время конвертации изображения истекло",
     "description": "Error when conversion exceeds the timeout"
   },
+  "noticeSvgScaledDown": {
+    "message": "Этот SVG слишком велик для отрисовки в размере $1 — он сохранён в размере $2.",
+    "description": "Notice when an oversized vector is rasterized smaller; $1 is the requested size, $2 the saved size"
+  },
   "localeCode": {
     "message": "ru",
     "description": "BCP 47 language tag for this catalog; sets <html lang>"

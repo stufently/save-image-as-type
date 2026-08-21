@@ -179,6 +179,10 @@
     "message": "画像の変換がタイムアウトしました",
     "description": "Error when conversion exceeds the timeout"
   },
+  "noticeSvgScaledDown": {
+    "message": "この SVG は $1 でレンダリングするには大きすぎるため、$2 で保存しました。",
+    "description": "Notice when an oversized vector is rasterized smaller; $1 is the requested size, $2 the saved size"
+  },
   "localeCode": {
     "message": "ja",
     "description": "BCP 47 language tag for this catalog; sets <html lang>"

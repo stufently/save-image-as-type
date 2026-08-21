@@ -36,13 +36,17 @@ const PNG_1x1 =
       const blob = await fetchImage(pngDataUrl);
       out.fetchOk = blob.size > 0;
 
-      const jpg = await convertImage(blob, 'image/jpeg', 0.9);
+      // convertImage resolves { dataUrl, notice } — notice is non-null only
+      // when the conversion silently changed something (see the SVG clamp).
+      const convert = async (b, mime, q) => (await convertImage(b, mime, q)).dataUrl;
+
+      const jpg = await convert(blob, 'image/jpeg', 0.9);
       out.jpeg = typeof jpg === 'string' && jpg.startsWith('data:image/jpeg;base64,');
 
-      const webp = await convertImage(blob, 'image/webp', 0.9);
+      const webp = await convert(blob, 'image/webp', 0.9);
       out.webp = typeof webp === 'string' && webp.startsWith('data:image/webp;base64,');
 
-      const png = await convertImage(blob, 'image/png');
+      const png = await convert(blob, 'image/png');
       out.png = typeof png === 'string' && png.startsWith('data:image/png;base64,');
 
       // SVG without width/height — must keep viewBox aspect ratio (2:1),
@@ -51,7 +55,7 @@ const PNG_1x1 =
         ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50"><rect width="100" height="50" fill="red"/></svg>'],
         { type: 'image/svg+xml' }
       );
-      const svgPng = await convertImage(svgBlob, 'image/png');
+      const svgPng = await convert(svgBlob, 'image/png');
       out.svgPng = typeof svgPng === 'string' && svgPng.startsWith('data:image/png;base64,');
       if (out.svgPng) {
         const decoded = await (await fetch(svgPng)).blob();
@@ -65,7 +69,10 @@ const PNG_1x1 =
         ['<svg xmlns="http://www.w3.org/2000/svg" width="64" height="32" viewBox="0 0 100 50"><rect width="100" height="50" fill="blue"/></svg>'],
         { type: 'image/svg+xml' }
       );
-      const svgPng2 = await convertImage(svgBlob2, 'image/png');
+      const svgResult2 = await convertImage(svgBlob2, 'image/png');
+      const svgPng2 = svgResult2.dataUrl;
+      // A vector inside the budget must come back untouched and unannounced
+      out.svgNormalUnclamped = svgResult2.notice === null;
       if (svgPng2 && svgPng2.startsWith('data:image/png;base64,')) {
         const decoded2 = await (await fetch(svgPng2)).blob();
         const bmp2 = await createImageBitmap(decoded2);
@@ -78,12 +85,71 @@ const PNG_1x1 =
         ['<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 50"><rect width="100" height="50" fill="green"/></svg>'],
         { type: 'image/svg+xml' }
       );
-      const svgPng3 = await convertImage(svgBlob3, 'image/png');
+      const svgPng3 = await convert(svgBlob3, 'image/png');
       if (svgPng3 && svgPng3.startsWith('data:image/png;base64,')) {
         const decoded3 = await (await fetch(svgPng3)).blob();
         const bmp3 = await createImageBitmap(decoded3);
         out.svgPercentSize = `${bmp3.width}x${bmp3.height}`;
         bmp3.close();
+      }
+
+      // SVG raster bomb: a vector asking to be rendered at 200000x50000 —
+      // 10 gigapixels, 40 GB of RGBA. A vector has no header to probe, so the
+      // only defence is capping the rasterization target itself.
+      //
+      // Why this proves the cap is applied BEFORE any memory is allocated:
+      // 200000x50000 is far past what Chrome will back with real pixels (max
+      // 65535 per side, ~268 MP of area). Setting those dimensions on a canvas
+      // does not throw — it yields a canvas with no usable backing store, on
+      // which every draw is a silent no-op and every pixel reads back as
+      // transparent black (verified against this Chromium build). So a
+      // "rasterize at full size, then downscale" implementation could only
+      // ever return an empty image here. Getting back a PNG that is exactly
+      // the 25 MP budget, keeps the 4:1 ratio, AND is actually orange means
+      // 10000x2500 was the only size the rasterizer was ever asked for.
+      const svgBombBlob = new Blob(
+        ['<svg xmlns="http://www.w3.org/2000/svg" width="200000" height="50000">' +
+         '<rect width="200000" height="50000" fill="orange"/></svg>'],
+        { type: 'image/svg+xml' }
+      );
+      const svgBomb = await convertImage(svgBombBlob, 'image/png');
+      // The user must be told the file is not the size the vector asked for.
+      // Compared in full, separator included: offscreen.js is decoded as the
+      // offscreen document's charset, so a missing <meta charset> turns the
+      // "×" into mojibake in a string the user actually reads.
+      out.svgBombNotice = svgBomb.notice || null;
+      out.svgBombNotified =
+        svgBomb.notice === 'This SVG was too large to render at 200000×50000, ' +
+        'so it was saved at 10000×2500.';
+      if (svgBomb.dataUrl && svgBomb.dataUrl.startsWith('data:image/png;base64,')) {
+        const decodedBomb = await (await fetch(svgBomb.dataUrl)).blob();
+        const bmpBomb = await createImageBitmap(decodedBomb);
+        out.svgBombSize = `${bmpBomb.width}x${bmpBomb.height}`;
+        // Sample the result: solid orange (#FFA500) means the vector really
+        // was painted, not lost to an unbacked oversized canvas
+        const probe = new OffscreenCanvas(1, 1);
+        const probeCtx = probe.getContext('2d');
+        probeCtx.drawImage(bmpBomb, 0, 0, 1, 1);
+        out.svgBombPixel = Array.from(probeCtx.getImageData(0, 0, 1, 1).data).join(',');
+        bmpBomb.close();
+      }
+
+      // Degenerate vector: 200000x1 is only 200k pixels, well inside the area
+      // budget, yet no canvas can be that wide — an area-only clamp leaves it
+      // untouched and the conversion dies with "Browser cannot encode".
+      // Each side must be capped too, and a side may never round down to 0.
+      const svgThinBlob = new Blob(
+        ['<svg xmlns="http://www.w3.org/2000/svg" width="200000" height="1">' +
+         '<rect width="200000" height="1" fill="orange"/></svg>'],
+        { type: 'image/svg+xml' }
+      );
+      const svgThin = await convertImage(svgThinBlob, 'image/png');
+      out.svgThinNotified = typeof svgThin.notice === 'string';
+      if (svgThin.dataUrl && svgThin.dataUrl.startsWith('data:image/png;base64,')) {
+        const decodedThin = await (await fetch(svgThin.dataUrl)).blob();
+        const bmpThin = await createImageBitmap(decodedThin);
+        out.svgThinSize = `${bmpThin.width}x${bmpThin.height}`;
+        bmpThin.close();
       }
 
       // Decode bomb: a PNG header claiming 60000x60000 (3.6 gigapixels).
@@ -98,7 +164,7 @@ const PNG_1x1 =
       bombView.setUint32(16, 60000, false);
       bombView.setUint32(20, 60000, false);
       try {
-        await convertImage(new Blob([bombHeader], { type: 'image/png' }), 'image/png');
+        await convert(new Blob([bombHeader], { type: 'image/png' }), 'image/png');
         out.bombRejected = false;
         out.bombError = 'no error thrown';
       } catch (e) {
@@ -108,10 +174,10 @@ const PNG_1x1 =
 
       // A 1x1 PNG must still pass the probe untouched (no false positives)
       out.smallPngStillWorks =
-        typeof (await convertImage(blob, 'image/png')) === 'string';
+        typeof (await convert(blob, 'image/png')) === 'string';
 
       // Two conversions in a row (offscreen reuse / close-mutex path)
-      const again = await convertImage(blob, 'image/jpeg', 0.5);
+      const again = await convert(blob, 'image/jpeg', 0.5);
       out.secondRun = typeof again === 'string' && again.startsWith('data:image/jpeg;base64,');
 
       out.fnLeadingDots = buildFilename('https://x.com/a/..hidden.png', 'jpg');
@@ -131,7 +197,13 @@ const PNG_1x1 =
     res.fetchOk && res.jpeg && res.webp && res.png &&
     res.svgPng && res.svgSize === '1024x512' &&
     res.svgExplicitSize === '64x32' &&
+    res.svgNormalUnclamped &&
     res.svgPercentSize === '1024x512' &&
+    res.svgBombSize === '10000x2500' &&
+    res.svgBombPixel === '255,165,0,255' &&
+    res.svgBombNotified &&
+    res.svgThinSize === '32767x1' &&
+    res.svgThinNotified &&
     res.bombRejected &&
     res.smallPngStillWorks &&
     res.secondRun &&

@@ -101,7 +101,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const settings = await getSettings();
     const quality = getQualityForFormat(format.id, settings);
     const imageBlob = await fetchImage(srcUrl, tab?.id);
-    const dataUrl = await convertImage(imageBlob, format.mime, quality);
+    const { dataUrl, notice } = await convertImage(imageBlob, format.mime, quality);
 
     if (!dataUrl) {
       const ext = format.ext.toUpperCase();
@@ -119,6 +119,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       filename: filename,
       saveAs: true,
     });
+
+    // The file is smaller than the source asked for (oversized vector) —
+    // say so, or the user silently gets dimensions they never chose.
+    if (notice) notify(notice);
   } catch (err) {
     console.error('Save Image As Type error:', err);
     const reason = err.message || msg('errUnknown', 'Unknown error');
@@ -325,6 +329,10 @@ function resetOffscreenIdleTimer() {
   }, 30000);
 }
 
+// Resolves { dataUrl, notice }: dataUrl is null when the encoder produced
+// nothing, notice is a localized string when the conversion succeeded but
+// changed something the user should know about (currently: a vector whose
+// requested raster size exceeded the pixel budget and was scaled down).
 async function convertImage(blob, targetMime, quality) {
   // Claim the conversion slot and cancel the idle timer BEFORE the async
   // ensure step, so the timer can't close the document underneath us.
@@ -380,12 +388,17 @@ async function convertImage(blob, targetMime, quality) {
         return;
       }
 
+      // `notice` is a user-facing note about the conversion itself (an
+      // oversized vector that had to be rasterized smaller), not a failure.
       if (message.data) {
         // message.data is already base64 — build the download data URL
         // directly instead of decoding and re-encoding the whole payload
-        resolve(`data:${targetMime};base64,${message.data}`);
+        resolve({
+          dataUrl: `data:${targetMime};base64,${message.data}`,
+          notice: message.notice || null,
+        });
       } else {
-        resolve(null);
+        resolve({ dataUrl: null, notice: message.notice || null });
       }
     };
 
@@ -437,9 +450,13 @@ function buildFilename(srcUrl, ext) {
   return `${name}.${ext}`;
 }
 
-// --- Error Notification ---
+// --- Notifications ---
 
 function notifyError(message) {
+  notify(message);
+}
+
+function notify(message) {
   chrome.notifications.create({
     type: 'basic',
     iconUrl: 'icons/icon128.png',

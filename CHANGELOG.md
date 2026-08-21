@@ -4,6 +4,29 @@
 
 ### Fixed (2026-08-21)
 
+- **Oversized SVGs no longer rasterize at their requested size.** The 100 MP header probe
+  cannot help a vector — an SVG has no header and no pixels, so `<svg width="200000"
+  height="50000">` asked the browser for 10 gigapixels (40 GB of RGBA) and got it. Vector
+  rasterization is now capped at a 25 MP budget (`MAX_SVG_PIXELS`) inside `svgRasterSize()`,
+  the single place the SVG raster size is decided and one that runs before the canvas is
+  created — so the shrunk size is the only size any bitmap is ever allocated at. Aspect ratio
+  is preserved. Oversized vectors are **scaled down, not rejected**: the conversion still
+  produces a file
+- Rasters keep the old behaviour: header probe first, hard rejection over 100 MP. The
+  post-decode `MAX_PIXELS` check stays as the second line of defence for unparseable headers;
+  vectors never reach it, as they leave `svgRasterSize()` already inside the lower SVG budget
+- **Degenerate vectors convert instead of failing.** Area was not the only limit worth
+  enforcing: `<svg width="200000" height="1">` is a mere 200k pixels, so a budget-only clamp
+  left it alone — and Chrome, which accepts any canvas dimension but silently leaves an
+  oversized canvas without a backing store, then produced "Browser cannot encode to image/png".
+  Each side is now capped at `MAX_CANVAS_SIDE` (32767) as well, and a side never rounds down
+  to 0 px. The clamp is also total: NaN, infinite, zero and negative sizes fall back to the
+  1024x1024 default rather than propagating into the canvas
+- **`offscreen.html` was missing `<meta charset>`**, so `offscreen.js` was decoded as
+  windows-1252 and every non-ASCII literal in it was mangled — the new notice reached the user
+  as "200000Ã—50000". `popup.html` and `welcome.html` already declared UTF-8; the offscreen
+  document now does too, and the smoke test compares the notice in full, separator included
+
 - **Decode bomb no longer allocates memory before it is rejected.** The 100-megapixel guard
   ran *after* `createImageBitmap()`/`Image` had already decoded the file, so a small crafted
   image declaring e.g. 60000x60000 cost gigabytes of RAM before the check could fire.
@@ -14,6 +37,12 @@
 
 ### Added (2026-08-21)
 
+- **The user is told when a vector was scaled down.** A downscale that happened silently would
+  hand the user a file in dimensions they never chose and no way to find out why. Conversions
+  now carry an optional `notice` alongside the data URL (`convertImage()` resolves
+  `{ dataUrl, notice }`), and `background.js` raises it as a notification after the download.
+  New message key `noticeSvgScaledDown`, translated in all 7 locales, naming both the requested
+  and the saved size
 - **Popup and welcome page are now localized** in all 7 locales (en, es, pt_BR, de, fr, ja, ru).
   Both pages previously shipped hardcoded English while `_locales/` carried 7 languages, so a
   Russian or Japanese user saw a half-translated interface. New `extension/i18n.js` applies
@@ -32,6 +61,14 @@
   60000x60000. It has no pixel data at all, so a post-decode guard would report "could not be
   decoded" — getting the "too large" error instead proves the check runs from the header. The
   test also asserts a normal 1x1 PNG is unaffected
+- Smoke test covers the SVG raster bomb the same structural way: a vector requesting
+  200000x50000. Chrome will not back a canvas that size with real pixels — it does not throw,
+  it just makes every draw a no-op and every pixel read back transparent — so a
+  "rasterize full size, then downscale" implementation could only return an empty image.
+  The test asserts the result is exactly 10000x2500 (the 25 MP budget, 4:1 ratio intact) *and*
+  that its pixels are the vector's orange, which is only reachable if the clamp was applied to
+  the rasterization target itself. It also asserts a 200000x1 vector comes back as a valid
+  32767x1 PNG (side cap) and that a 64x32 SVG still converts with no notice at all
 
 ### Documentation (2026-08-21)
 

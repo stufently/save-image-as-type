@@ -179,6 +179,10 @@
     "message": "Zeitüberschreitung bei der Bildkonvertierung",
     "description": "Error when conversion exceeds the timeout"
   },
+  "noticeSvgScaledDown": {
+    "message": "Diese SVG-Datei war zu groß, um in $1 gerendert zu werden, und wurde daher in $2 gespeichert.",
+    "description": "Notice when an oversized vector is rasterized smaller; $1 is the requested size, $2 the saved size"
+  },
   "localeCode": {
     "message": "de",
     "description": "BCP 47 language tag for this catalog; sets <html lang>"

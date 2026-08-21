@@ -4,6 +4,24 @@
 
 const MAX_PIXELS = 100_000_000; // 100 megapixels
 
+// SVG has no pixels of its own — the raster size is whatever we ask the
+// browser for. `<svg width="200000" height="50000">` asks for 10 gigapixels,
+// i.e. 40 GB of RGBA, and no header parser can catch it because a vector has
+// no header. So vectors are clamped instead of rejected: the picture still
+// converts, just smaller. 25 MP (5000x5000) is far past any screen or print
+// use for a converted logo/icon and keeps the canvas at 100 MB.
+const MAX_SVG_PIXELS = 25_000_000; // 25 megapixels
+
+// Area alone is not enough: `<svg width="200000" height="1">` is a mere
+// 200k pixels, yet Chrome will not back a canvas that wide. It does not throw
+// — the attribute is accepted and the canvas is simply left without pixels,
+// so every draw is a silent no-op and toBlob() then fails to encode. Each
+// side is therefore capped as well.
+const MAX_CANVAS_SIDE = 32_767;
+
+// Used when an SVG offers no usable size at all.
+const SVG_DEFAULT_SIDE = 1024;
+
 // --- Localized strings ---
 // Offscreen documents are extension pages, so chrome.i18n is available here.
 // These messages travel back to background.js and end up in a notification.
@@ -134,6 +152,49 @@ function tooLargeError() {
   return new Error(msg('errImageTooLarge', 'Image is too large to convert (maximum 100 megapixels).'));
 }
 
+// Shrink a requested raster size until it fits both the pixel budget and the
+// canvas side limit, keeping the aspect ratio. Used for vectors, where the
+// size is a request rather than a fact.
+//
+// One deliberate exception to "keep the ratio": a side never goes below 1px,
+// so a degenerate request like 200000x1 comes back as 32767x1 rather than
+// 32767x0.16. Squashing the ratio is the only alternative to producing
+// nothing at all, and 0px would be nothing at all.
+function clampSvgRasterSize(width, height) {
+  const w = Math.floor(width);
+  const h = Math.floor(height);
+
+  // NaN, Infinity, zero and negatives cannot be scaled into anything useful
+  if (!Number.isFinite(w) || !Number.isFinite(h) || w < 1 || h < 1) {
+    return { width: SVG_DEFAULT_SIDE, height: SVG_DEFAULT_SIDE, clamped: false };
+  }
+
+  const scale = Math.min(
+    1,
+    Math.sqrt(MAX_SVG_PIXELS / (w * h)),
+    MAX_CANVAS_SIDE / w,
+    MAX_CANVAS_SIDE / h
+  );
+  if (scale >= 1) return { width: w, height: h, clamped: false };
+
+  let outWidth = Math.max(1, Math.floor(w * scale));
+  let outHeight = Math.max(1, Math.floor(h * scale));
+
+  // Belt and braces: raising a side that floored to 0 back up to 1px is the
+  // one step that can add pixels back. It cannot currently overshoot the
+  // budget (the other side is capped at MAX_CANVAS_SIDE, far below it), but
+  // that only holds while the two constants stay in their present relation.
+  if (outWidth * outHeight > MAX_SVG_PIXELS) {
+    if (outWidth >= outHeight) {
+      outWidth = Math.max(1, Math.floor(MAX_SVG_PIXELS / outHeight));
+    } else {
+      outHeight = Math.max(1, Math.floor(MAX_SVG_PIXELS / outWidth));
+    }
+  }
+
+  return { width: outWidth, height: outHeight, clamped: true };
+}
+
 // --- Base64 Helpers ---
 // Data is transferred as base64 strings to avoid ArrayBuffer corruption
 // during chrome.runtime.sendMessage JSON serialization (Chrome < 118).
@@ -189,9 +250,35 @@ function loadImageElement(blob) {
   });
 }
 
+// Applies the vector pixel budget to a requested raster size and, when it
+// had to shrink, produces the message that tells the user why the file they
+// get is smaller than the vector asked for.
+function svgSizeWithBudget(width, height) {
+  const fit = clampSvgRasterSize(width, height);
+  if (!fit.clamped) return { width: fit.width, height: fit.height, notice: null };
+
+  const requested = `${width}×${height}`;
+  const actual = `${fit.width}×${fit.height}`;
+  return {
+    width: fit.width,
+    height: fit.height,
+    notice: msg(
+      'noticeSvgScaledDown',
+      `This SVG was too large to render at ${requested}, so it was saved at ${actual}.`,
+      [requested, actual]
+    ),
+  };
+}
+
 // Rasterization size for SVG. Explicit width/height attributes win; an SVG
 // with only a viewBox gets the browser's 300x150 default, so scale the
 // viewBox to a 1024px longest side instead of rasterizing at that size.
+//
+// Whatever the source of the numbers, they leave here already clamped to
+// MAX_SVG_PIXELS: this is the only place the SVG raster size is decided, and
+// it runs before the canvas exists, so an oversized vector never gets a
+// full-size bitmap allocated for it. Drawing at full size and scaling down
+// afterwards would be no defence at all — the memory would already be spent.
 function svgRasterSize(arrayBuffer, img) {
   const naturalWidth = img.naturalWidth || img.width;
   const naturalHeight = img.naturalHeight || img.height;
@@ -208,18 +295,18 @@ function svgRasterSize(arrayBuffer, img) {
     const vb = root.viewBox?.baseVal;
     if (!hasExplicitSize && vb && vb.width > 0 && vb.height > 0) {
       const scale = 1024 / Math.max(vb.width, vb.height);
-      return {
-        width: Math.max(1, Math.round(vb.width * scale)),
-        height: Math.max(1, Math.round(vb.height * scale)),
-      };
+      return svgSizeWithBudget(
+        Math.max(1, Math.round(vb.width * scale)),
+        Math.max(1, Math.round(vb.height * scale))
+      );
     }
   } catch {
     // Fall through to the intrinsic size
   }
   if (naturalWidth && naturalHeight) {
-    return { width: naturalWidth, height: naturalHeight };
+    return svgSizeWithBudget(naturalWidth, naturalHeight);
   }
-  return { width: 1024, height: 1024 };
+  return svgSizeWithBudget(SVG_DEFAULT_SIDE, SVG_DEFAULT_SIDE);
 }
 
 // --- Message Handler ---
@@ -232,7 +319,8 @@ chrome.runtime.onMessage.addListener((message) => {
       chrome.runtime.sendMessage({
         type: 'conversion-result',
         id: message.id,
-        data: result,
+        data: result.data,
+        notice: result.notice || undefined,
       }).catch(() => {});
     })
     .catch((err) => {
@@ -262,11 +350,16 @@ async function handleConversion(message) {
   }
 
   let drawSource, width, height;
+  let notice = null;
 
   if (isSvg) {
-    // SVG: createImageBitmap doesn't support SVG blobs, use Image element
+    // SVG: createImageBitmap doesn't support SVG blobs, use Image element.
+    // Loading the element only parses the vector document — Blink rasterizes
+    // an SVG <img> at the size it is drawn to, not at load — so the raster
+    // budget applied here, before the canvas is created, is applied before
+    // any bitmap memory exists.
     const img = await loadImageElement(sourceBlob);
-    ({ width, height } = svgRasterSize(arrayBuffer, img));
+    ({ width, height, notice } = svgRasterSize(arrayBuffer, img));
     drawSource = img;
   } else {
     // Raster: try createImageBitmap, fall back to Image element
@@ -286,8 +379,9 @@ async function handleConversion(message) {
     }
   }
 
-  // Second line of defence: formats whose header we cannot parse, and SVGs
-  // whose intrinsic size only becomes known once the document is laid out.
+  // Second line of defence for formats whose header we cannot parse. Vectors
+  // never reach it: their size left svgRasterSize already inside the (lower)
+  // SVG budget.
   if (width * height > MAX_PIXELS) {
     if (drawSource.close) drawSource.close();
     throw tooLargeError();
@@ -334,5 +428,5 @@ async function handleConversion(message) {
   }
 
   const resultBuffer = await resultBlob.arrayBuffer();
-  return arrayBufferToBase64(resultBuffer);
+  return { data: arrayBufferToBase64(resultBuffer), notice };
 }
