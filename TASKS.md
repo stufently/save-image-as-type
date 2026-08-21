@@ -10,7 +10,10 @@
 ### Medium priority
 - [x] fetchImage: fallback-повтор с `credentials: 'include'` при неуспешном первом запросе (v1.2.0)
 - [x] Race: closing-mutex (`closingOffscreen`) + activeConversions++ до ensureOffscreenDocument (v1.2.0)
-- [ ] 100MP-лимит проверяется после декода (offscreen.js) — decode bomb уже съел память; проверять размеры до полного декода где возможно
+- [x] 100MP-лимит проверяется ДО декода (2026-08-21): `probeImageSize()` читает заголовок
+  (PNG IHDR, JPEG SOF0-15, GIF, BMP, WebP VP8/VP8L/VP8X) и отсекает бомбу по нескольким
+  байтам; для форматов с неразобранным заголовком остался прежний пост-декодный чек как
+  вторая линия. Покрыто смоук-тестом (24-байтный PNG-заголовок 60000x60000)
 - [x] SVG: размер из viewBox (длинная сторона 1024) при отсутствии явных width/height, явный масштаб в drawImage (v1.2.0)
 - [x] buildFilename: ведущие точки срезаются (v1.2.0)
 - [x] Смоук-тест tests/smoke-test.js (Playwright + Chromium new headless) + job test в build.yml (v1.2.0)
@@ -24,7 +27,10 @@
 - [ ] Опционально: пин actions по SHA
 
 ### Low priority
-- [ ] Локализовать popup (строки захардкожены по-английски при 7 языках в _locales)
+- [x] Локализованы popup И welcome-страница (2026-08-21): новый `extension/i18n.js`
+  подставляет `chrome.i18n` в элементы `[data-i18n]`, английский текст остаётся в HTML как
+  фолбэк; сообщения об ошибках в background.js/offscreen.js тоже локализованы; 38 новых
+  ключей переведены во все 7 локалей
 - [ ] Настройка saveAs (диалог/тихое сохранение)
 - [x] Убран fallback alert-инъекция в notifyError (v1.2.0)
 - [ ] Blob URL из offscreen вместо data URL для скачивания (ещё меньше памяти; требует аккуратного lifecycle)

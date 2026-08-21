@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Save Image As — Getting Started</title>
+  <title data-i18n="welcomeTitle">Save Image As — Getting Started</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -156,8 +156,8 @@
 </head>
 <body>
   <div class="hero">
-    <h1>Save Image As — Installed!</h1>
-    <p>Convert and save any image as PNG, JPG, or WebP</p>
+    <h1 data-i18n="welcomeHeroTitle">Save Image As — Installed!</h1>
+    <p data-i18n="welcomeHeroSubtitle">Convert and save any image as PNG, JPG, or WebP</p>
   </div>
 
   <div class="container">
@@ -165,24 +165,24 @@
       <div class="step">
         <div class="step-number">1</div>
         <div class="step-content">
-          <h3>Right-click any image</h3>
-          <p>Find any image on a webpage and right-click it to open the context menu.</p>
+          <h3 data-i18n="welcomeStep1Title">Right-click any image</h3>
+          <p data-i18n="welcomeStep1Text">Find any image on a webpage and right-click it to open the context menu.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-number">2</div>
         <div class="step-content">
-          <h3>Select "Save Image As"</h3>
-          <p>Hover over "Save Image As" to see available formats.</p>
+          <h3 data-i18n="welcomeStep2Title">Select "Save Image As"</h3>
+          <p data-i18n="welcomeStep2Text">Hover over "Save Image As" to see available formats.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-number">3</div>
         <div class="step-content">
-          <h3>Choose your format</h3>
-          <p>Pick PNG, JPG, or WebP. The image is converted instantly in your browser and downloaded.</p>
+          <h3 data-i18n="welcomeStep3Title">Choose your format</h3>
+          <p data-i18n="welcomeStep3Text">Pick PNG, JPG, or WebP. The image is converted instantly in your browser and downloaded.</p>
         </div>
       </div>
     </div>
@@ -190,26 +190,28 @@
     <div class="formats">
       <div class="format-badge">
         <div class="name">PNG</div>
-        <div class="desc">Lossless</div>
+        <div class="desc" data-i18n="welcomeBadgePng">Lossless</div>
       </div>
       <div class="format-badge">
         <div class="name">JPG</div>
-        <div class="desc">Photos</div>
+        <div class="desc" data-i18n="welcomeBadgeJpg">Photos</div>
       </div>
       <div class="format-badge">
         <div class="name">WebP</div>
-        <div class="desc">Modern</div>
+        <div class="desc" data-i18n="welcomeBadgeWebp">Modern</div>
       </div>
     </div>
 
     <div class="privacy">
-      <h3>100% Private</h3>
-      <p>All conversion happens locally in your browser. No images are uploaded to any server. No tracking, no analytics.</p>
+      <h3 data-i18n="welcomePrivacyTitle">100% Private</h3>
+      <p data-i18n="welcomePrivacyText">All conversion happens locally in your browser. No images are uploaded to any server. No tracking, no analytics.</p>
     </div>
 
     <div class="tip">
-      <strong>Tip:</strong> Click the extension icon in the toolbar to adjust quality settings for JPG and WebP formats.
+      <strong data-i18n="welcomeTipLabel">Tip:</strong> <span data-i18n="welcomeTipText">Click the extension icon in the toolbar to adjust quality settings for JPG and WebP formats.</span>
     </div>
   </div>
+
+  <script src="i18n.js"></script>
 </body>
 </html>

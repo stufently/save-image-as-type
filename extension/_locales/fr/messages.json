@@ -26,5 +26,161 @@
   "menuSaveAsDefault": {
     "message": "Enregistrer au format par défaut",
     "description": "Context menu item for default format"
+  },
+  "popupTitle": {
+    "message": "Enregistrer l'image sous",
+    "description": "Popup heading and window title"
+  },
+  "popupSubtitle": {
+    "message": "Clic droit sur une image pour l'enregistrer dans le format de votre choix",
+    "description": "Popup subtitle under the heading"
+  },
+  "popupDefaultFormat": {
+    "message": "Format par défaut",
+    "description": "Label for the default format dropdown"
+  },
+  "popupFormatPng": {
+    "message": "PNG (sans perte, transparence)",
+    "description": "Dropdown option for PNG"
+  },
+  "popupFormatJpg": {
+    "message": "JPG (plus léger, sans transparence)",
+    "description": "Dropdown option for JPG"
+  },
+  "popupFormatWebp": {
+    "message": "WebP (moderne, compact)",
+    "description": "Dropdown option for WebP"
+  },
+  "popupJpgQuality": {
+    "message": "Qualité JPG",
+    "description": "Label for the JPG quality slider"
+  },
+  "popupWebpQuality": {
+    "message": "Qualité WebP",
+    "description": "Label for the WebP quality slider"
+  },
+  "popupTip": {
+    "message": "Astuce : faites un clic droit sur une image de la page et choisissez",
+    "description": "Footer tip in the popup"
+  },
+  "popupTipMenu": {
+    "message": "Enregistrer l'image sous → Format",
+    "description": "Menu path shown in the popup footer tip"
+  },
+  "popupSettingsSaved": {
+    "message": "Paramètres enregistrés",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "welcomeTitle": {
+    "message": "Enregistrer l'image sous — Prise en main",
+    "description": "Welcome page window title"
+  },
+  "welcomeHeroTitle": {
+    "message": "Enregistrer l'image sous — installé !",
+    "description": "Welcome page hero heading"
+  },
+  "welcomeHeroSubtitle": {
+    "message": "Convertissez et enregistrez n'importe quelle image en PNG, JPG ou WebP",
+    "description": "Welcome page hero subtitle"
+  },
+  "welcomeStep1Title": {
+    "message": "Faites un clic droit sur une image",
+    "description": "Welcome step 1 heading"
+  },
+  "welcomeStep1Text": {
+    "message": "Repérez une image sur la page et faites un clic droit pour ouvrir le menu contextuel.",
+    "description": "Welcome step 1 body"
+  },
+  "welcomeStep2Title": {
+    "message": "Choisissez « Enregistrer l'image sous »",
+    "description": "Welcome step 2 heading"
+  },
+  "welcomeStep2Text": {
+    "message": "Survolez « Enregistrer l'image sous » pour afficher les formats disponibles.",
+    "description": "Welcome step 2 body"
+  },
+  "welcomeStep3Title": {
+    "message": "Choisissez votre format",
+    "description": "Welcome step 3 heading"
+  },
+  "welcomeStep3Text": {
+    "message": "Choisissez PNG, JPG ou WebP. L'image est convertie instantanément dans votre navigateur, puis téléchargée.",
+    "description": "Welcome step 3 body"
+  },
+  "welcomeBadgePng": {
+    "message": "Sans perte",
+    "description": "PNG format badge caption"
+  },
+  "welcomeBadgeJpg": {
+    "message": "Photos",
+    "description": "JPG format badge caption"
+  },
+  "welcomeBadgeWebp": {
+    "message": "Moderne",
+    "description": "WebP format badge caption"
+  },
+  "welcomePrivacyTitle": {
+    "message": "100 % privé",
+    "description": "Privacy box heading on the welcome page"
+  },
+  "welcomePrivacyText": {
+    "message": "Toute la conversion se fait localement dans votre navigateur. Aucune image n'est envoyée sur un serveur. Aucun suivi, aucune analyse.",
+    "description": "Privacy box body on the welcome page"
+  },
+  "welcomeTipLabel": {
+    "message": "Astuce :",
+    "description": "Bold 'Tip:' label on the welcome page"
+  },
+  "welcomeTipText": {
+    "message": "Cliquez sur l'icône de l'extension dans la barre d'outils pour régler la qualité JPG et WebP.",
+    "description": "Tip body on the welcome page"
+  },
+  "errImageTooLarge": {
+    "message": "L'image est trop grande pour être convertie (100 mégapixels maximum).",
+    "description": "Error when the image exceeds the 100 MP guard"
+  },
+  "errImageDecodeFailed": {
+    "message": "Impossible de décoder l'image source.",
+    "description": "Error when the source image cannot be decoded"
+  },
+  "errEncodeFailed": {
+    "message": "Le navigateur ne peut pas encoder en $1",
+    "description": "Error when canvas.toBlob returns nothing; $1 is the MIME type"
+  },
+  "errFormatUnsupported": {
+    "message": "Votre navigateur ne prend pas en charge l'encodage $1. Veuillez mettre Chrome à jour vers la dernière version.",
+    "description": "Error when the encoder silently fell back; $1 is the format name"
+  },
+  "errConversionFailed": {
+    "message": "Échec de la conversion en $1. Votre navigateur ne prend peut-être pas en charge ce format.",
+    "description": "Error when conversion produced no data; $1 is the file extension"
+  },
+  "errSaveFailed": {
+    "message": "Échec de l'enregistrement de l'image : $1",
+    "description": "Generic save failure notification; $1 is the underlying reason"
+  },
+  "errUnknown": {
+    "message": "Erreur inconnue",
+    "description": "Fallback reason when an error carries no message"
+  },
+  "errHttpFetch": {
+    "message": "HTTP $1 lors du téléchargement de l'image",
+    "description": "Error when the image request fails; $1 is the HTTP status"
+  },
+  "errBlobNoTab": {
+    "message": "Impossible d'accéder aux images blob: sans onglet actif.",
+    "description": "Error when a blob: image is used without an active tab"
+  },
+  "errBlobUnreadable": {
+    "message": "Impossible d'accéder à cette image blob:. Essayez d'abord de l'enregistrer normalement.",
+    "description": "Error when a blob: image cannot be read"
+  },
+  "errConversionTimeout": {
+    "message": "Délai dépassé lors de la conversion de l'image",
+    "description": "Error when conversion exceeds the timeout"
+  },
+  "localeCode": {
+    "message": "fr",
+    "description": "BCP 47 language tag for this catalog; sets <html lang>"
   }
 }

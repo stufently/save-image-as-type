@@ -1,5 +1,13 @@
 // Popup script: settings management
 
+function msg(key, fallback) {
+  try {
+    return chrome.i18n.getMessage(key) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 const DEFAULT_SETTINGS = {
   defaultFormat: 'png',
   jpgQuality: 92,
@@ -79,7 +87,7 @@ function saveSettings() {
       console.warn('Failed to save settings:', chrome.runtime.lastError.message);
       return;
     }
-    showStatus('Settings saved');
+    showStatus(msg('popupSettingsSaved', 'Settings saved'));
   });
 }
 

@@ -1,12 +1,20 @@
 // Save Image As Type — Background Service Worker
 // Handles context menus, image fetching, conversion via OffscreenDocument, and downloads.
 
+function msg(key, fallback, substitutions) {
+  try {
+    return chrome.i18n.getMessage(key, substitutions) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 // AVIF is intentionally absent: Chrome's canvas.toBlob() cannot encode
 // image/avif, so the option would always fail at conversion time.
 const FORMATS = [
-  { id: 'png', title: chrome.i18n.getMessage('menuSaveAsPng') || 'Save as PNG', mime: 'image/png', ext: 'png' },
-  { id: 'jpg', title: chrome.i18n.getMessage('menuSaveAsJpg') || 'Save as JPG', mime: 'image/jpeg', ext: 'jpg' },
-  { id: 'webp', title: chrome.i18n.getMessage('menuSaveAsWebp') || 'Save as WebP', mime: 'image/webp', ext: 'webp' },
+  { id: 'png', title: msg('menuSaveAsPng', 'Save as PNG'), mime: 'image/png', ext: 'png' },
+  { id: 'jpg', title: msg('menuSaveAsJpg', 'Save as JPG'), mime: 'image/jpeg', ext: 'jpg' },
+  { id: 'webp', title: msg('menuSaveAsWebp', 'Save as WebP'), mime: 'image/webp', ext: 'webp' },
 ];
 
 const DEFAULT_SETTINGS = {
@@ -40,7 +48,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
   chrome.contextMenus.create({
     id: 'save-image-parent',
-    title: chrome.i18n.getMessage('menuSaveImageAs') || 'Save Image As',
+    title: msg('menuSaveImageAs', 'Save Image As'),
     contexts: ['image'],
   });
 
@@ -63,7 +71,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   chrome.contextMenus.create({
     id: 'save-as-default',
     parentId: 'save-image-parent',
-    title: chrome.i18n.getMessage('menuSaveAsDefault') || 'Save as default format',
+    title: msg('menuSaveAsDefault', 'Save as default format'),
     contexts: ['image'],
   });
 });
@@ -96,7 +104,12 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const dataUrl = await convertImage(imageBlob, format.mime, quality);
 
     if (!dataUrl) {
-      notifyError(`Conversion to ${format.ext.toUpperCase()} failed. Your browser may not support this format.`);
+      const ext = format.ext.toUpperCase();
+      notifyError(msg(
+        'errConversionFailed',
+        `Conversion to ${ext} failed. Your browser may not support this format.`,
+        [ext]
+      ));
       return;
     }
 
@@ -108,7 +121,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     });
   } catch (err) {
     console.error('Save Image As Type error:', err);
-    notifyError(`Failed to save image: ${err.message || 'Unknown error'}`);
+    const reason = err.message || msg('errUnknown', 'Unknown error');
+    notifyError(msg('errSaveFailed', `Failed to save image: ${reason}`, [reason]));
   }
 });
 
@@ -171,7 +185,7 @@ async function fetchImage(url, tabId) {
   }
 
   if (!response.ok) {
-    throw new Error(`HTTP ${response.status} fetching image`);
+    throw new Error(msg('errHttpFetch', `HTTP ${response.status} fetching image`, [String(response.status)]));
   }
 
   return await response.blob();
@@ -188,7 +202,7 @@ function looksLikeImageResponse(response) {
 // Fetch blob: URLs by injecting a content script that reads the blob
 async function fetchBlobFromTab(blobUrl, tabId) {
   if (!tabId) {
-    throw new Error('Cannot access blob: images without an active tab.');
+    throw new Error(msg('errBlobNoTab', 'Cannot access blob: images without an active tab.'));
   }
 
   try {
@@ -220,7 +234,7 @@ async function fetchBlobFromTab(blobUrl, tabId) {
     // Fall through
   }
 
-  throw new Error('Could not access this blob: image. Try saving it normally first.');
+  throw new Error(msg('errBlobUnreadable', 'Could not access this blob: image. Try saving it normally first.'));
 }
 
 // --- Image Conversion using OffscreenDocument ---
@@ -354,7 +368,7 @@ async function convertImage(blob, targetMime, quality) {
 
     const timeout = setTimeout(() => {
       cleanup();
-      reject(new Error('Image conversion timed out'));
+      reject(new Error(msg('errConversionTimeout', 'Image conversion timed out')));
     }, 30000);
 
     const listener = (message) => {
@@ -429,7 +443,7 @@ function notifyError(message) {
   chrome.notifications.create({
     type: 'basic',
     iconUrl: 'icons/icon128.png',
-    title: 'Save Image As Type',
+    title: msg('extName', 'Save Image As Type'),
     message: message,
   });
 }

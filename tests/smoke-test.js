@@ -86,6 +86,30 @@ const PNG_1x1 =
         bmp3.close();
       }
 
+      // Decode bomb: a PNG header claiming 60000x60000 (3.6 gigapixels).
+      // The file carries an IHDR and nothing else — no IDAT, no pixel data —
+      // so a decoder would fail with "could not be decoded". Getting the
+      // "too large" error instead proves the guard ran from the header,
+      // before any decode allocated memory.
+      const bombHeader = new Uint8Array(24);
+      bombHeader.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], 0);
+      bombHeader.set([0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52], 8);
+      const bombView = new DataView(bombHeader.buffer);
+      bombView.setUint32(16, 60000, false);
+      bombView.setUint32(20, 60000, false);
+      try {
+        await convertImage(new Blob([bombHeader], { type: 'image/png' }), 'image/png');
+        out.bombRejected = false;
+        out.bombError = 'no error thrown';
+      } catch (e) {
+        out.bombError = e.message;
+        out.bombRejected = /megapixel/i.test(e.message);
+      }
+
+      // A 1x1 PNG must still pass the probe untouched (no false positives)
+      out.smallPngStillWorks =
+        typeof (await convertImage(blob, 'image/png')) === 'string';
+
       // Two conversions in a row (offscreen reuse / close-mutex path)
       const again = await convertImage(blob, 'image/jpeg', 0.5);
       out.secondRun = typeof again === 'string' && again.startsWith('data:image/jpeg;base64,');
@@ -108,6 +132,8 @@ const PNG_1x1 =
     res.svgPng && res.svgSize === '1024x512' &&
     res.svgExplicitSize === '64x32' &&
     res.svgPercentSize === '1024x512' &&
+    res.bombRejected &&
+    res.smallPngStillWorks &&
     res.secondRun &&
     res.fnLeadingDots === 'hidden.jpg' &&
     res.fnNormal === 'My_Photo.jpg' &&

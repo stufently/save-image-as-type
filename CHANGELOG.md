@@ -2,6 +2,37 @@
 
 ## [Unreleased]
 
+### Fixed (2026-08-21)
+
+- **Decode bomb no longer allocates memory before it is rejected.** The 100-megapixel guard
+  ran *after* `createImageBitmap()`/`Image` had already decoded the file, so a small crafted
+  image declaring e.g. 60000x60000 cost gigabytes of RAM before the check could fire.
+  `offscreen.js` now parses the image header first (PNG IHDR, JPEG SOF0-SOF15, GIF, BMP,
+  WebP VP8/VP8L/VP8X) and rejects oversized images from those few bytes alone. Formats whose
+  header cannot be parsed still fall through to the original post-decode check, which is kept
+  as a second line of defence. Closes the open "100MP checked after decode" item in TASKS.md
+
+### Added (2026-08-21)
+
+- **Popup and welcome page are now localized** in all 7 locales (en, es, pt_BR, de, fr, ja, ru).
+  Both pages previously shipped hardcoded English while `_locales/` carried 7 languages, so a
+  Russian or Japanese user saw a half-translated interface. New `extension/i18n.js` applies
+  `chrome.i18n` messages to `[data-i18n]` elements at load (MV3 forbids inline scripts); the
+  English text stays in the HTML as a per-key fallback
+- **Error notifications are localized too** — every user-visible string in `background.js` and
+  `offscreen.js` now goes through `chrome.i18n` with an English fallback
+- `localeCode` message key per locale drives `<html lang>`. `@@ui_locale` was unreliable for
+  this: in headless Chromium with `--lang=ru` it reported `en_US` while messages correctly
+  resolved to Russian, which would have mislabelled the page language for screen readers
+- 38 new message keys added to all 7 locales, fully translated — no locale falls back to English
+
+### Changed (2026-08-21)
+
+- Smoke test covers the decode bomb: a 24-byte PNG that is nothing but an IHDR claiming
+  60000x60000. It has no pixel data at all, so a post-decode guard would report "could not be
+  decoded" — getting the "too large" error instead proves the check runs from the header. The
+  test also asserts a normal 1x1 PNG is unaffected
+
 ### Documentation (2026-08-21)
 
 - README install section rewritten: the commented-out `detail/TODO` placeholder links and the

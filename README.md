@@ -36,7 +36,8 @@ Manually installed extensions do not auto-update; repeat the steps to upgrade.
 - Keeps the original filename and swaps only the extension
 - Always opens the "Save As" dialog, so you choose the destination
 - Refuses to silently save the wrong format: if the encoder falls back, you get an error
-- 100-megapixel guard against memory-exhausting images
+- 100-megapixel guard read from the image header, so a decode bomb is rejected before any
+  decoder allocates memory for it
 - Welcome page on first install
 - Manifest V3, minimal permissions
 - Open source
@@ -88,8 +89,8 @@ to a server or have gone unmaintained. This one is deliberately narrow:
   and cookie-protected images behind a login.
 - **Open source, MIT.** Every line that touches your images is in this repo, and releases
   are built by CI from a tag rather than uploaded by hand.
-- **Localized** into 7 languages — extension name, store description, and the context menu
-  items you actually click. (The settings popup and error messages are still English-only.)
+- **Fully localized** into 7 languages — extension name, store description, context menu,
+  settings popup, welcome page, and every error message.
 
 ## Architecture
 
@@ -98,6 +99,7 @@ extension/
 ├── manifest.json          # Manifest V3 config
 ├── background.js          # Service worker: context menus, fetch, download orchestration
 ├── offscreen.html/.js     # Offscreen document for Canvas API image conversion
+├── i18n.js                # Applies chrome.i18n messages to [data-i18n] elements
 ├── welcome.html           # Onboarding page shown on first install
 ├── popup/                 # Settings popup (format, quality sliders)
 ├── icons/                 # Extension icons (16/32/48/128)
@@ -175,9 +177,13 @@ The same ZIP works for all three stores (Manifest V3 compatible).
 
 ## Localization
 
-Extension name, store description, and context-menu items are localized in
-`extension/_locales/`. The settings popup, the welcome page, and error notifications are
-currently hardcoded English.
+Everything the user sees is localized in `extension/_locales/`: the extension name, the store
+description, the context menu, the settings popup, the welcome page, and all error
+notifications.
+
+Static pages opt in declaratively — `extension/i18n.js` walks `[data-i18n]` elements and
+replaces their text at load. The English wording stays in the HTML as the fallback, so a
+locale missing a key degrades to English rather than to a blank element.
 
 | Language | Code |
 |---|---|

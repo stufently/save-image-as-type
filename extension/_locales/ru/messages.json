@@ -26,5 +26,161 @@
   "menuSaveAsDefault": {
     "message": "Сохранить в формате по умолчанию",
     "description": "Context menu item for default format"
+  },
+  "popupTitle": {
+    "message": "Сохранить изображение как",
+    "description": "Popup heading and window title"
+  },
+  "popupSubtitle": {
+    "message": "Правый клик по изображению — сохранить в нужном формате",
+    "description": "Popup subtitle under the heading"
+  },
+  "popupDefaultFormat": {
+    "message": "Формат по умолчанию",
+    "description": "Label for the default format dropdown"
+  },
+  "popupFormatPng": {
+    "message": "PNG (без потерь, прозрачность)",
+    "description": "Dropdown option for PNG"
+  },
+  "popupFormatJpg": {
+    "message": "JPG (меньше размер, без прозрачности)",
+    "description": "Dropdown option for JPG"
+  },
+  "popupFormatWebp": {
+    "message": "WebP (современный, компактный)",
+    "description": "Dropdown option for WebP"
+  },
+  "popupJpgQuality": {
+    "message": "Качество JPG",
+    "description": "Label for the JPG quality slider"
+  },
+  "popupWebpQuality": {
+    "message": "Качество WebP",
+    "description": "Label for the WebP quality slider"
+  },
+  "popupTip": {
+    "message": "Подсказка: кликните правой кнопкой по изображению и выберите",
+    "description": "Footer tip in the popup"
+  },
+  "popupTipMenu": {
+    "message": "Сохранить изображение как → Формат",
+    "description": "Menu path shown in the popup footer tip"
+  },
+  "popupSettingsSaved": {
+    "message": "Настройки сохранены",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "welcomeTitle": {
+    "message": "Сохранить изображение как — начало работы",
+    "description": "Welcome page window title"
+  },
+  "welcomeHeroTitle": {
+    "message": "Расширение установлено!",
+    "description": "Welcome page hero heading"
+  },
+  "welcomeHeroSubtitle": {
+    "message": "Конвертируйте и сохраняйте любые изображения в PNG, JPG или WebP",
+    "description": "Welcome page hero subtitle"
+  },
+  "welcomeStep1Title": {
+    "message": "Кликните правой кнопкой по изображению",
+    "description": "Welcome step 1 heading"
+  },
+  "welcomeStep1Text": {
+    "message": "Найдите изображение на странице и кликните по нему правой кнопкой, чтобы открыть контекстное меню.",
+    "description": "Welcome step 1 body"
+  },
+  "welcomeStep2Title": {
+    "message": "Выберите «Сохранить изображение как»",
+    "description": "Welcome step 2 heading"
+  },
+  "welcomeStep2Text": {
+    "message": "Наведите курсор на «Сохранить изображение как», чтобы увидеть доступные форматы.",
+    "description": "Welcome step 2 body"
+  },
+  "welcomeStep3Title": {
+    "message": "Выберите формат",
+    "description": "Welcome step 3 heading"
+  },
+  "welcomeStep3Text": {
+    "message": "Выберите PNG, JPG или WebP. Изображение мгновенно конвертируется прямо в браузере и скачивается.",
+    "description": "Welcome step 3 body"
+  },
+  "welcomeBadgePng": {
+    "message": "Без потерь",
+    "description": "PNG format badge caption"
+  },
+  "welcomeBadgeJpg": {
+    "message": "Фото",
+    "description": "JPG format badge caption"
+  },
+  "welcomeBadgeWebp": {
+    "message": "Современный",
+    "description": "WebP format badge caption"
+  },
+  "welcomePrivacyTitle": {
+    "message": "100% приватно",
+    "description": "Privacy box heading on the welcome page"
+  },
+  "welcomePrivacyText": {
+    "message": "Вся конвертация выполняется локально в браузере. Изображения не загружаются на сервер. Без трекинга и аналитики.",
+    "description": "Privacy box body on the welcome page"
+  },
+  "welcomeTipLabel": {
+    "message": "Подсказка:",
+    "description": "Bold 'Tip:' label on the welcome page"
+  },
+  "welcomeTipText": {
+    "message": "Нажмите на значок расширения на панели, чтобы настроить качество для JPG и WebP.",
+    "description": "Tip body on the welcome page"
+  },
+  "errImageTooLarge": {
+    "message": "Изображение слишком большое для конвертации (максимум 100 мегапикселей).",
+    "description": "Error when the image exceeds the 100 MP guard"
+  },
+  "errImageDecodeFailed": {
+    "message": "Не удалось декодировать исходное изображение.",
+    "description": "Error when the source image cannot be decoded"
+  },
+  "errEncodeFailed": {
+    "message": "Браузер не может закодировать в $1",
+    "description": "Error when canvas.toBlob returns nothing; $1 is the MIME type"
+  },
+  "errFormatUnsupported": {
+    "message": "Ваш браузер не поддерживает кодирование в $1. Обновите Chrome до последней версии.",
+    "description": "Error when the encoder silently fell back; $1 is the format name"
+  },
+  "errConversionFailed": {
+    "message": "Не удалось конвертировать в $1. Возможно, браузер не поддерживает этот формат.",
+    "description": "Error when conversion produced no data; $1 is the file extension"
+  },
+  "errSaveFailed": {
+    "message": "Не удалось сохранить изображение: $1",
+    "description": "Generic save failure notification; $1 is the underlying reason"
+  },
+  "errUnknown": {
+    "message": "Неизвестная ошибка",
+    "description": "Fallback reason when an error carries no message"
+  },
+  "errHttpFetch": {
+    "message": "HTTP $1 при загрузке изображения",
+    "description": "Error when the image request fails; $1 is the HTTP status"
+  },
+  "errBlobNoTab": {
+    "message": "Нет доступа к blob:-изображению без активной вкладки.",
+    "description": "Error when a blob: image is used without an active tab"
+  },
+  "errBlobUnreadable": {
+    "message": "Не удалось получить это blob:-изображение. Попробуйте сначала сохранить его обычным способом.",
+    "description": "Error when a blob: image cannot be read"
+  },
+  "errConversionTimeout": {
+    "message": "Время конвертации изображения истекло",
+    "description": "Error when conversion exceeds the timeout"
+  },
+  "localeCode": {
+    "message": "ru",
+    "description": "BCP 47 language tag for this catalog; sets <html lang>"
   }
 }

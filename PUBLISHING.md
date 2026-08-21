@@ -8,7 +8,7 @@
 ## Chrome Web Store (First Publication — already done, kept for reference)
 
 1. Go to [CWS Developer Dashboard](https://chrome.google.com/webstore/devconsole)
-2. Click **New Item** → Upload `save-image-as-type-1.0.0.zip` from [GitHub Releases](https://github.com/stufently/save-image-as-type/releases)
+2. Click **New Item** → Upload the latest `save-image-as-type-<version>.zip` from [GitHub Releases](https://github.com/stufently/save-image-as-type/releases)
 3. Fill in the listing:
    - **Name**: auto-filled from manifest (`Save Image As Type - PNG JPG WebP`)
    - **Description**: copy from `store/description.txt`

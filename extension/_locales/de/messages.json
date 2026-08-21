@@ -26,5 +26,161 @@
   "menuSaveAsDefault": {
     "message": "Im Standardformat speichern",
     "description": "Context menu item for default format"
+  },
+  "popupTitle": {
+    "message": "Bild speichern als",
+    "description": "Popup heading and window title"
+  },
+  "popupSubtitle": {
+    "message": "Rechtsklick auf ein Bild, um es im gewünschten Format zu speichern",
+    "description": "Popup subtitle under the heading"
+  },
+  "popupDefaultFormat": {
+    "message": "Standardformat",
+    "description": "Label for the default format dropdown"
+  },
+  "popupFormatPng": {
+    "message": "PNG (verlustfrei, Transparenz)",
+    "description": "Dropdown option for PNG"
+  },
+  "popupFormatJpg": {
+    "message": "JPG (kleiner, keine Transparenz)",
+    "description": "Dropdown option for JPG"
+  },
+  "popupFormatWebp": {
+    "message": "WebP (modern, kompakt)",
+    "description": "Dropdown option for WebP"
+  },
+  "popupJpgQuality": {
+    "message": "JPG-Qualität",
+    "description": "Label for the JPG quality slider"
+  },
+  "popupWebpQuality": {
+    "message": "WebP-Qualität",
+    "description": "Label for the WebP quality slider"
+  },
+  "popupTip": {
+    "message": "Tipp: Rechtsklick auf ein Bild auf der Seite und dann",
+    "description": "Footer tip in the popup"
+  },
+  "popupTipMenu": {
+    "message": "Bild speichern als → Format",
+    "description": "Menu path shown in the popup footer tip"
+  },
+  "popupSettingsSaved": {
+    "message": "Einstellungen gespeichert",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "welcomeTitle": {
+    "message": "Bild speichern als — Erste Schritte",
+    "description": "Welcome page window title"
+  },
+  "welcomeHeroTitle": {
+    "message": "Bild speichern als — installiert!",
+    "description": "Welcome page hero heading"
+  },
+  "welcomeHeroSubtitle": {
+    "message": "Beliebige Bilder als PNG, JPG oder WebP konvertieren und speichern",
+    "description": "Welcome page hero subtitle"
+  },
+  "welcomeStep1Title": {
+    "message": "Rechtsklick auf ein beliebiges Bild",
+    "description": "Welcome step 1 heading"
+  },
+  "welcomeStep1Text": {
+    "message": "Suchen Sie ein Bild auf der Seite und öffnen Sie mit einem Rechtsklick das Kontextmenü.",
+    "description": "Welcome step 1 body"
+  },
+  "welcomeStep2Title": {
+    "message": "„Bild speichern als“ auswählen",
+    "description": "Welcome step 2 heading"
+  },
+  "welcomeStep2Text": {
+    "message": "Bewegen Sie den Zeiger über „Bild speichern als“, um die verfügbaren Formate zu sehen.",
+    "description": "Welcome step 2 body"
+  },
+  "welcomeStep3Title": {
+    "message": "Format auswählen",
+    "description": "Welcome step 3 heading"
+  },
+  "welcomeStep3Text": {
+    "message": "Wählen Sie PNG, JPG oder WebP. Das Bild wird sofort im Browser konvertiert und heruntergeladen.",
+    "description": "Welcome step 3 body"
+  },
+  "welcomeBadgePng": {
+    "message": "Verlustfrei",
+    "description": "PNG format badge caption"
+  },
+  "welcomeBadgeJpg": {
+    "message": "Fotos",
+    "description": "JPG format badge caption"
+  },
+  "welcomeBadgeWebp": {
+    "message": "Modern",
+    "description": "WebP format badge caption"
+  },
+  "welcomePrivacyTitle": {
+    "message": "100 % privat",
+    "description": "Privacy box heading on the welcome page"
+  },
+  "welcomePrivacyText": {
+    "message": "Die gesamte Konvertierung läuft lokal im Browser. Es werden keine Bilder auf Server hochgeladen. Kein Tracking, keine Analyse.",
+    "description": "Privacy box body on the welcome page"
+  },
+  "welcomeTipLabel": {
+    "message": "Tipp:",
+    "description": "Bold 'Tip:' label on the welcome page"
+  },
+  "welcomeTipText": {
+    "message": "Klicken Sie auf das Symbol der Erweiterung in der Symbolleiste, um die Qualität für JPG und WebP einzustellen.",
+    "description": "Tip body on the welcome page"
+  },
+  "errImageTooLarge": {
+    "message": "Das Bild ist zu groß für die Konvertierung (maximal 100 Megapixel).",
+    "description": "Error when the image exceeds the 100 MP guard"
+  },
+  "errImageDecodeFailed": {
+    "message": "Das Quellbild konnte nicht dekodiert werden.",
+    "description": "Error when the source image cannot be decoded"
+  },
+  "errEncodeFailed": {
+    "message": "Der Browser kann nicht in $1 kodieren",
+    "description": "Error when canvas.toBlob returns nothing; $1 is the MIME type"
+  },
+  "errFormatUnsupported": {
+    "message": "Ihr Browser unterstützt die $1-Kodierung nicht. Bitte aktualisieren Sie Chrome auf die neueste Version.",
+    "description": "Error when the encoder silently fell back; $1 is the format name"
+  },
+  "errConversionFailed": {
+    "message": "Konvertierung in $1 fehlgeschlagen. Ihr Browser unterstützt dieses Format möglicherweise nicht.",
+    "description": "Error when conversion produced no data; $1 is the file extension"
+  },
+  "errSaveFailed": {
+    "message": "Bild konnte nicht gespeichert werden: $1",
+    "description": "Generic save failure notification; $1 is the underlying reason"
+  },
+  "errUnknown": {
+    "message": "Unbekannter Fehler",
+    "description": "Fallback reason when an error carries no message"
+  },
+  "errHttpFetch": {
+    "message": "HTTP $1 beim Laden des Bildes",
+    "description": "Error when the image request fails; $1 is the HTTP status"
+  },
+  "errBlobNoTab": {
+    "message": "Ohne aktiven Tab kann nicht auf blob:-Bilder zugegriffen werden.",
+    "description": "Error when a blob: image is used without an active tab"
+  },
+  "errBlobUnreadable": {
+    "message": "Auf dieses blob:-Bild konnte nicht zugegriffen werden. Speichern Sie es zuerst auf normalem Weg.",
+    "description": "Error when a blob: image cannot be read"
+  },
+  "errConversionTimeout": {
+    "message": "Zeitüberschreitung bei der Bildkonvertierung",
+    "description": "Error when conversion exceeds the timeout"
+  },
+  "localeCode": {
+    "message": "de",
+    "description": "BCP 47 language tag for this catalog; sets <html lang>"
   }
 }

@@ -26,5 +26,161 @@
   "menuSaveAsDefault": {
     "message": "デフォルト形式で保存",
     "description": "Context menu item for default format"
+  },
+  "popupTitle": {
+    "message": "名前を付けて画像を保存",
+    "description": "Popup heading and window title"
+  },
+  "popupSubtitle": {
+    "message": "画像を右クリックして、好きな形式で保存できます",
+    "description": "Popup subtitle under the heading"
+  },
+  "popupDefaultFormat": {
+    "message": "デフォルト形式",
+    "description": "Label for the default format dropdown"
+  },
+  "popupFormatPng": {
+    "message": "PNG（可逆圧縮・透過対応）",
+    "description": "Dropdown option for PNG"
+  },
+  "popupFormatJpg": {
+    "message": "JPG（軽量・透過なし）",
+    "description": "Dropdown option for JPG"
+  },
+  "popupFormatWebp": {
+    "message": "WebP（新形式・小容量）",
+    "description": "Dropdown option for WebP"
+  },
+  "popupJpgQuality": {
+    "message": "JPG画質",
+    "description": "Label for the JPG quality slider"
+  },
+  "popupWebpQuality": {
+    "message": "WebP画質",
+    "description": "Label for the WebP quality slider"
+  },
+  "popupTip": {
+    "message": "ヒント: ページ上の画像を右クリックして次を選択します",
+    "description": "Footer tip in the popup"
+  },
+  "popupTipMenu": {
+    "message": "名前を付けて画像を保存 → 形式",
+    "description": "Menu path shown in the popup footer tip"
+  },
+  "popupSettingsSaved": {
+    "message": "設定を保存しました",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "welcomeTitle": {
+    "message": "名前を付けて画像を保存 — はじめに",
+    "description": "Welcome page window title"
+  },
+  "welcomeHeroTitle": {
+    "message": "インストールが完了しました",
+    "description": "Welcome page hero heading"
+  },
+  "welcomeHeroSubtitle": {
+    "message": "あらゆる画像をPNG・JPG・WebPに変換して保存",
+    "description": "Welcome page hero subtitle"
+  },
+  "welcomeStep1Title": {
+    "message": "画像を右クリック",
+    "description": "Welcome step 1 heading"
+  },
+  "welcomeStep1Text": {
+    "message": "ページ上の画像を右クリックしてコンテキストメニューを開きます。",
+    "description": "Welcome step 1 body"
+  },
+  "welcomeStep2Title": {
+    "message": "「名前を付けて画像を保存」を選択",
+    "description": "Welcome step 2 heading"
+  },
+  "welcomeStep2Text": {
+    "message": "「名前を付けて画像を保存」にカーソルを合わせると、利用できる形式が表示されます。",
+    "description": "Welcome step 2 body"
+  },
+  "welcomeStep3Title": {
+    "message": "形式を選択",
+    "description": "Welcome step 3 heading"
+  },
+  "welcomeStep3Text": {
+    "message": "PNG・JPG・WebPから選ぶと、ブラウザ内で即座に変換されてダウンロードされます。",
+    "description": "Welcome step 3 body"
+  },
+  "welcomeBadgePng": {
+    "message": "可逆圧縮",
+    "description": "PNG format badge caption"
+  },
+  "welcomeBadgeJpg": {
+    "message": "写真向け",
+    "description": "JPG format badge caption"
+  },
+  "welcomeBadgeWebp": {
+    "message": "新形式",
+    "description": "WebP format badge caption"
+  },
+  "welcomePrivacyTitle": {
+    "message": "完全プライベート",
+    "description": "Privacy box heading on the welcome page"
+  },
+  "welcomePrivacyText": {
+    "message": "変換はすべてブラウザ内で完結します。画像がサーバーに送信されることはありません。トラッキングも解析もありません。",
+    "description": "Privacy box body on the welcome page"
+  },
+  "welcomeTipLabel": {
+    "message": "ヒント:",
+    "description": "Bold 'Tip:' label on the welcome page"
+  },
+  "welcomeTipText": {
+    "message": "ツールバーの拡張機能アイコンをクリックすると、JPGとWebPの画質を調整できます。",
+    "description": "Tip body on the welcome page"
+  },
+  "errImageTooLarge": {
+    "message": "画像が大きすぎて変換できません（最大1億画素）。",
+    "description": "Error when the image exceeds the 100 MP guard"
+  },
+  "errImageDecodeFailed": {
+    "message": "元の画像をデコードできませんでした。",
+    "description": "Error when the source image cannot be decoded"
+  },
+  "errEncodeFailed": {
+    "message": "ブラウザは $1 形式にエンコードできません",
+    "description": "Error when canvas.toBlob returns nothing; $1 is the MIME type"
+  },
+  "errFormatUnsupported": {
+    "message": "お使いのブラウザは $1 へのエンコードに対応していません。Chromeを最新版に更新してください。",
+    "description": "Error when the encoder silently fell back; $1 is the format name"
+  },
+  "errConversionFailed": {
+    "message": "$1 への変換に失敗しました。お使いのブラウザがこの形式に対応していない可能性があります。",
+    "description": "Error when conversion produced no data; $1 is the file extension"
+  },
+  "errSaveFailed": {
+    "message": "画像を保存できませんでした: $1",
+    "description": "Generic save failure notification; $1 is the underlying reason"
+  },
+  "errUnknown": {
+    "message": "不明なエラー",
+    "description": "Fallback reason when an error carries no message"
+  },
+  "errHttpFetch": {
+    "message": "画像の取得中に HTTP $1 が返されました",
+    "description": "Error when the image request fails; $1 is the HTTP status"
+  },
+  "errBlobNoTab": {
+    "message": "アクティブなタブがないため blob: 画像にアクセスできません。",
+    "description": "Error when a blob: image is used without an active tab"
+  },
+  "errBlobUnreadable": {
+    "message": "この blob: 画像にアクセスできませんでした。先に通常の方法で保存してみてください。",
+    "description": "Error when a blob: image cannot be read"
+  },
+  "errConversionTimeout": {
+    "message": "画像の変換がタイムアウトしました",
+    "description": "Error when conversion exceeds the timeout"
+  },
+  "localeCode": {
+    "message": "ja",
+    "description": "BCP 47 language tag for this catalog; sets <html lang>"
   }
 }
