@@ -48,7 +48,7 @@ jobs:
         run: cd extension && zip -r ../save-image-as-type-${{ steps.version.outputs.VERSION }}.zip . -x '*.DS_Store' '*.git*'
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.tag || github.ref_name }}
           files: save-image-as-type-${{ steps.version.outputs.VERSION }}.zip
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: ${{ vars.CWS_EXTENSION_ID != '' }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: chrome-zip
           path: chrome-build
