@@ -50,7 +50,7 @@
    git tag v1.2.1
    git push && git push --tags
    ```
-4. GitHub Actions builds the ZIP, creates the Release, and **publishes to Chrome Web Store automatically** (job `publish-chrome` in `release.yml`; requires repo variable `CWS_EXTENSION_ID` + secrets `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` — see README "Chrome Web Store auto-publish")
+4. GitHub Actions builds the ZIP, creates the Release, and **publishes to Chrome Web Store automatically** (job `publish-chrome` in `release.yml`; requires repo variables `CWS_EXTENSION_ID`, `CWS_PUBLISHER_ID` + secrets `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` — see README "Chrome Web Store auto-publish")
 5. Edge and Opera: download the ZIP from [Releases](https://github.com/stufently/save-image-as-type/releases) and upload manually (one ZIP fits all stores)
 
 ## Re-generating Screenshots

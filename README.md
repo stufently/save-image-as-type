@@ -151,6 +151,7 @@ The `publish-chrome` job in `.github/workflows/release.yml` runs when the reposi
 | Kind | Name | Value |
 |---|---|---|
 | Variable | `CWS_EXTENSION_ID` | Extension ID from the CWS dashboard URL |
+| Variable | `CWS_PUBLISHER_ID` | Publisher ID from Developer Dashboard → Publisher → Settings (required by CWS API v2) |
 | Secret | `CWS_CLIENT_ID` | OAuth client ID (Google Cloud Console) |
 | Secret | `CWS_CLIENT_SECRET` | OAuth client secret |
 | Secret | `CWS_REFRESH_TOKEN` | OAuth refresh token with `chromewebstore` scope |

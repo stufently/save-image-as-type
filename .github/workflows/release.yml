@@ -82,10 +82,12 @@ jobs:
           echo "path=$ZIP" >> "$GITHUB_OUTPUT"
 
       - name: Upload + publish
-        uses: mnao305/chrome-extension-upload@v6.0.0
+        # v7 = Chrome Web Store API v2 (v1.1 is shut off 2026-10-15).
+        uses: mnao305/chrome-extension-upload@v7.0.0
         with:
           file-path: ${{ steps.zip.outputs.path }}
           extension-id: ${{ vars.CWS_EXTENSION_ID }}
+          publisher-id: ${{ vars.CWS_PUBLISHER_ID }}
           client-id: ${{ secrets.CWS_CLIENT_ID }}
           client-secret: ${{ secrets.CWS_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CWS_REFRESH_TOKEN }}
