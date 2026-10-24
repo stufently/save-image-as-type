@@ -1,0 +1,53 @@
+# Site config for .github/site/build.py. Everything else comes from README.md.
+name = "Save Image As Type"
+title = "Save Image As Type — save images as PNG, JPG, WebP"
+headline = "Save any image from the web as PNG, JPG or WebP"
+description = "Chrome extension: right-click an image and save it as PNG, JPG or WebP. Converted locally with the Canvas API, no uploads. Manifest V3, MIT."
+lang = "en"
+keywords = ["save image as type", "save image as png", "save image as jpg", "webp to png", "webp to jpg", "image converter", "chrome extension"]
+license = "MIT"
+license_url = "https://opensource.org/license/mit"
+category = "BrowserApplication"
+os = "Chrome, Edge, Opera and other Chromium browsers"
+programming_language = "JavaScript"
+eyebrow = "Open source · MIT · Manifest V3"
+download_url = "https://chromewebstore.google.com/detail/save-image-as-type-png-jp/bbahljpklphbjnapiehkkijjofgceenm"
+same_as = ["https://chromewebstore.google.com/detail/save-image-as-type-png-jp/bbahljpklphbjnapiehkkijjofgceenm"]
+
+landing_sections = ["Install", "How to Use", "Supported Formats", "Privacy"]
+
+pages = ["PRIVACY.md"]
+docs_dir = ""
+
+features = [
+  "Right-click any image and save it as PNG, JPG or WebP, or use one \"Save as default format\" item.",
+  "Conversion runs in the browser with the Canvas API: no server, no uploads, no analytics.",
+  "Quality sliders for JPG and WebP; PNG is always lossless, and JPG gets a white background for transparency.",
+  "Works on SVG, data: URLs, blob: URLs, cross-origin and cookie-protected images.",
+  "Keeps the original filename and always opens the Save As dialog, so you choose the destination.",
+  "Manifest V3 with minimal permissions, localized into 7 languages, open source.",
+]
+
+[[faq]]
+q = "How do I convert a WebP image to PNG or JPG in Chrome?"
+a = "Install the extension, right-click the image, choose Save Image As and pick PNG, JPG or WebP. The Save As dialog opens so you choose where the file goes."
+
+[[faq]]
+q = "Are my images uploaded to a server?"
+a = "No. The image is decoded, drawn to a canvas and re-encoded with the browser's own Canvas API inside an offscreen document. There is no backend, no upload endpoint, no analytics and no account."
+
+[[faq]]
+q = "Why is there no AVIF option?"
+a = "AVIF was removed in v1.2.0: Chrome's canvas.toBlob() cannot encode image/avif, so the option could never work client-side."
+
+[[faq]]
+q = "Does it work in Edge, Opera or other Chromium browsers?"
+a = "The extension is Manifest V3 and the same ZIP works in Edge and Opera. It is not published in Edge Add-ons or Opera Add-ons yet, so download the ZIP from GitHub Releases and load it unpacked from the extensions page with Developer mode on."
+
+[[faq]]
+q = "Why does it need access to all sites?"
+a = "The extension has to fetch the image you right-clicked, and that image can live on any domain. The scripting permission is used only to read a blob: image URL from the page that created it."
+
+[[faq]]
+q = "What settings does it store?"
+a = "Three values in chrome.storage.sync: defaultFormat, jpgQuality and webpQuality. Nothing about which images you saved, which sites you visited or who you are."
